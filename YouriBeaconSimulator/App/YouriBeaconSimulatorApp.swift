@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct YouriBeaconSimulatorApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
+	var body: some Scene {
+		WindowGroup {
+			ContentView()
+			#if os(macOS)
+				.frame(width: 800)
+			#endif
+		}
+		#if os(macOS)
+		.windowResizability(.contentSize)
+		#endif
+	}
 }
