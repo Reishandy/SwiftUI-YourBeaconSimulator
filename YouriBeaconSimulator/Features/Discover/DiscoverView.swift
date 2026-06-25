@@ -19,7 +19,7 @@ struct DiscoverView: View {
 				NavigationLink(item, value: item)
 			}
 			.navigationTitle("Discover")
-			.navigationSplitViewColumnWidth(min: 250, ideal: 250, max: 400)
+			.navigationSplitViewColumnWidth(min: 300, ideal: 300, max: 400)
 			
 		} detail: {
 			if let selectedItem {
