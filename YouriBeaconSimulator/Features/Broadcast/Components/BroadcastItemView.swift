@@ -46,9 +46,9 @@ struct BroadcastItemView: View {
 				
 				Spacer()
 				
-				#if os(macOS)
+#if os(macOS)
 				buttonComplex
-				#endif
+#endif
 				
 				Button {
 					withAnimation() {
@@ -58,16 +58,16 @@ struct BroadcastItemView: View {
 					Label(isBroadcasting ? "Stop" : "Broadcast", systemImage: isBroadcasting ? "square.fill" : "play.fill")
 						.contentTransition(.symbolEffect(.replace))
 						.foregroundStyle(isBroadcasting ? .red : .primary)
-						#if os(iOS)
-						// Larger hitbox
+#if os(iOS)
+					// Larger hitbox
 						.padding(10)
 						.contentShape(Rectangle())
-						#endif
+#endif
 				}
-				#if os(iOS)
+#if os(iOS)
 				.buttonStyle(.plain)
 				.labelStyle(.iconOnly)
-				#endif
+#endif
 				.disabled(shouldDisableBroadcast)
 				.geometryGroup()
 			}
@@ -79,14 +79,14 @@ struct BroadcastItemView: View {
 			}
 		}
 		.listRowBackground(shouldDisableBroadcast ? Color.gray.opacity(0.2) : nil)
-		#if os(iOS)
+#if os(iOS)
 		.swipeActions(edge: .trailing, allowsFullSwipe: false) {
 			buttonComplex
 		}
 		.contextMenu {
 			buttonComplex
 		}
-		#endif
+#endif
 	}
 	
 	@ViewBuilder

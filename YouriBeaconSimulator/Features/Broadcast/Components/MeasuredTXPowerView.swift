@@ -21,12 +21,12 @@ struct MeasuredTXPowerView: View {
 		self._measuredTxPower = State(initialValue: Double(initialValue))
 	}
 	
-    var body: some View {
+	var body: some View {
 		VStack {
 			Slider(value: $measuredTxPower, in: (-100)...(-30)) {
-			#if os(iOS)
+#if os(iOS)
 				Text("Measured TX Power")
-			#endif
+#endif
 			} minimumValueLabel: {
 				Text("-100 dBm")
 					.font(.caption)
@@ -55,7 +55,7 @@ struct MeasuredTXPowerView: View {
 					.opacity(0.8)
 			}
 		}
-    }
+	}
 }
 
 #Preview {

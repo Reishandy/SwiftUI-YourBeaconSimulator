@@ -19,17 +19,41 @@ class PreviewContainer {
 			
 			let project1 = BroadcastProject(name: "Lobby System", proximityUUID: UUID().uuidString)
 			let project2 = BroadcastProject(name: "Meeting Rooms", proximityUUID: UUID().uuidString)
+			let project3 = BroadcastProject(name: "Cafeteria", proximityUUID: UUID().uuidString)
+			let project4 = BroadcastProject(name: "Parking Garage", proximityUUID: UUID().uuidString)
 			
-			let beacon1 = BroadcastBeacon(beaconName: "Main Entrance", majorID: 1, minorID: 100)
+			let beacon1 = BroadcastBeacon(beaconName: "Main Entrance", majorID: 2, minorID: 100)
 			let beacon2 = BroadcastBeacon(beaconName: "Reception Desk", majorID: 1, minorID: 200)
-			let beacon3 = BroadcastBeacon(beaconName: "Room A", majorID: 2, minorID: 101)
+			let beacon3 = BroadcastBeacon(beaconName: "Elevator Bank A", majorID: 1, minorID: 201)
+			
+			let beacon4 = BroadcastBeacon(beaconName: "Room A", majorID: 2, minorID: 101)
+			let beacon5 = BroadcastBeacon(beaconName: "Room B", majorID: 1, minorID: 102)
+			let beacon6 = BroadcastBeacon(beaconName: "Conference Hall", majorID: 3, minorID: 150)
+			
+			let beacon7 = BroadcastBeacon(beaconName: "Main Food Court", majorID: 1, minorID: 10)
+			let beacon8 = BroadcastBeacon(beaconName: "Coffee Shop", majorID: 3, minorID: 20)
+			
+			let beacon9 = BroadcastBeacon(beaconName: "Level 1 North", majorID: 5, minorID: 1)
+			let beacon10 = BroadcastBeacon(beaconName: "Level 2 South", majorID: 4, minorID: 2)
 			
 			beacon1.project = project1
 			beacon2.project = project1
-			beacon3.project = project2
+			beacon3.project = project1
 			
-			container.mainContext.insert(project1)
-			container.mainContext.insert(project2)
+			beacon4.project = project2
+			beacon5.project = project2
+			beacon6.project = project2
+			
+			beacon7.project = project3
+			beacon8.project = project3
+			
+			beacon9.project = project4
+			beacon10.project = project4
+			
+			context.insert(project1)
+			context.insert(project2)
+			context.insert(project3)
+			context.insert(project4)
 			
 			return container
 		} catch {

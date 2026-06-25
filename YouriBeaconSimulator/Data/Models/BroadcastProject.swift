@@ -25,4 +25,18 @@ class BroadcastProject: Identifiable {
 		self.name = name
 		self.proximityUUID = proximityUUID
 	}
+	
+	var sortedBeacons: [BroadcastBeacon] {
+		return (beacons ?? []).sorted { beacon1, beacon2 in
+			if beacon1.majorID != beacon2.majorID {
+				return beacon1.majorID < beacon2.majorID
+			}
+			
+			if beacon1.minorID != beacon2.minorID {
+				return beacon1.minorID < beacon2.minorID
+			}
+			
+			return beacon1.timestamp > beacon2.timestamp
+		}
+	}
 }

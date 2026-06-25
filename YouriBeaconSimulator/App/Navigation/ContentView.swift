@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
-import SwiftData // TODO: Debug
+import SwiftData
 
 struct ContentView: View {
+	@Environment(\.modelContext) private var modelContext
+	
     var body: some View {
 		TabView {
-			BroadcastView()
+			BroadcastView(broadcastViewModel: BroadcastViewModel(modelContext: modelContext))
 				.tabItem {
-					Label("Broadcast", systemImage: "antenna.radiowaves.left.and.right")
+					Label("Broadcast", systemImage: "sensor.radiowaves.left.and.right.fill")
 				}
 			
 			DiscoverView()
@@ -26,5 +28,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-		.modelContainer(PreviewContainer.shared) // TODO: Debug
+		.modelContainer(PreviewContainer.shared)
 }

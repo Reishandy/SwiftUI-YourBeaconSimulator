@@ -6,21 +6,21 @@
 //
 
 import SwiftUI
-import SwiftData // TODO: Debug
+import SwiftData
 
 @main
 struct YouriBeaconSimulatorApp: App {
 	var body: some Scene {
 		WindowGroup {
 			ContentView()
-				.modelContainer(PreviewContainer.shared) // TODO: Debug
-			#if os(macOS)
+				.modelContainer(for: [BroadcastProject.self, BroadcastProject.self])
+#if os(macOS)
 				.frame(minWidth: 700)
 				.frame(maxWidth: 1000)
-			#endif
+#endif
 		}
-		#if os(macOS)
+#if os(macOS)
 		.windowResizability(.contentSize)
-		#endif
+#endif
 	}
 }
