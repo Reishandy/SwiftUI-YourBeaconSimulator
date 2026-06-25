@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BroadcastItemView: View {
-	// TODO: Broadcast item model and onlcick stuff
+	let broadcastBeacon: BroadcastBeacon
 	let isBroadcasting: Bool
 	let shouldDisableBroadcast: Bool
 	
@@ -27,15 +27,15 @@ struct BroadcastItemView: View {
 				}
 				
 				VStack(alignment: .leading) {
-					Text("Beacon name")
+					Text(broadcastBeacon.beaconName)
 						.font(.headline)
 					
 					HStack {
-						Text("Major: 1")
+						Text("Major: \(broadcastBeacon.majorID)")
 							.font(.subheadline)
 							.opacity(0.8)
 						
-						Text("Minor: 2")
+						Text("Minor: \(broadcastBeacon.minorID)")
 							.font(.subheadline)
 							.opacity(0.8)
 					}
@@ -125,6 +125,9 @@ struct BroadcastItemView: View {
 	List {
 		// Simulate other beacon while one is broadcasting
 		BroadcastItemView(
+			broadcastBeacon: BroadcastBeacon(
+				projectName: "Project", beaconUUID: UUID().uuidString, beaconName: "Beacon", majorID: 10, minorID: 11
+			),
 			isBroadcasting: false,
 			shouldDisableBroadcast: isBroadcasting,
 			onBroadcastClick: {},
@@ -135,6 +138,9 @@ struct BroadcastItemView: View {
 		)
 		
 		BroadcastItemView(
+			broadcastBeacon: BroadcastBeacon(
+				projectName: "Project", beaconUUID: UUID().uuidString, beaconName: "Beacon", majorID: 10, minorID: 11
+			),
 			isBroadcasting: isBroadcasting,
 			shouldDisableBroadcast: false,
 			onBroadcastClick: { isBroadcasting.toggle() },
@@ -146,6 +152,9 @@ struct BroadcastItemView: View {
 		
 		// Simulate other beacon while one is broadcasting
 		BroadcastItemView(
+			broadcastBeacon: BroadcastBeacon(
+				projectName: "Project", beaconUUID: UUID().uuidString, beaconName: "Beacon", majorID: 10, minorID: 11
+			),
 			isBroadcasting: false,
 			shouldDisableBroadcast: isBroadcasting,
 			onBroadcastClick: {},

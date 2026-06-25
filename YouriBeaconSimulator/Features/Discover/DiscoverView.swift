@@ -13,6 +13,8 @@ struct DiscoverView: View {
 	
 	@State private var selectedItem: String?
 	
+	// TODO: Animation
+	// TODO: Empty and permission state
 	var body: some View {
 		NavigationSplitView {
 			List(items, id: \.self, selection: $selectedItem) { item in
