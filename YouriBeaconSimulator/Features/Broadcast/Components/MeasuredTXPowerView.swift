@@ -8,11 +8,55 @@
 import SwiftUI
 
 struct MeasuredTXPowerView: View {
+	let onMeasuredTxPowerChange: (Int) -> Void
+	
+	@State private var measuredTxPower: Double
+	
+	init(
+		initialValue: Int,
+		onMeasuredTxPowerChange: @escaping (Int) -> Void
+	) {
+		self.onMeasuredTxPowerChange = onMeasuredTxPowerChange
+		
+		self._measuredTxPower = State(initialValue: Double(initialValue))
+	}
+	
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+		VStack {
+			Slider(value: $measuredTxPower, in: (-100)...(-30)) {
+				Text("Measured TX Power")
+			} minimumValueLabel: {
+				Text("-100 dBm")
+					.font(.caption)
+			} maximumValueLabel: {
+				Text("-30 dBm")
+					.font(.caption)
+			} onEditingChanged: { _ in
+				onMeasuredTxPowerChange(Int(measuredTxPower.rounded()))
+			}
+			
+			HStack {
+				Text("Closer")
+					.font(.caption)
+					.opacity(0.8)
+				
+				Spacer()
+				
+				Text("Sets the measured TX power.")
+					.font(.caption2)
+					.opacity(0.8)
+				
+				Spacer()
+				
+				Text("Further")
+					.font(.caption)
+					.opacity(0.8)
+			}
+			.padding(.horizontal, 10)
+		}
     }
 }
 
 #Preview {
-    MeasuredTXPowerView()
+	MeasuredTXPowerView(initialValue: -59, ) { _ in }
 }

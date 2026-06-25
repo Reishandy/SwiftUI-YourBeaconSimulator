@@ -17,7 +17,7 @@ struct ContentView: View {
 			
 			DiscoverView()
 				.tabItem {
-					Label("Discover", systemImage: "wifi") // TODO: Better Icon
+					Label("Discover", systemImage: "dot.radiowaves.up.forward")
 				}
 		}
     }

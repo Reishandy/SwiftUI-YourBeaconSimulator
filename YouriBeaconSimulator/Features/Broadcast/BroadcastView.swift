@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct BroadcastView: View {
-	// TODO: Broadcast View
 	// TODO: Group by uuid sort by major asc
+	// TODO: Add a default on the measured tx power slider that sets to -59 on form
 	
 	var body: some View {
 		NavigationStack {
@@ -17,7 +17,17 @@ struct BroadcastView: View {
 				ForEach(1...5, id: \.self) { sec in
 					Section {
 						ForEach(1...3, id: \.self) { num in
-							BroadcastItemView()
+							BroadcastItemView(
+								isBroadcasting: false,
+								shouldDisableBroadcast: false,
+								onBroadcastClick: {},
+								onDeleteClick: {},
+								onEditCLick: {
+									// TODO: Share Name, UUID, Major, Minor
+								},
+								onShareClick: {},
+								onMeasuredTxPowerChange: { _ in }
+							)
 						}
 					} header: {
 						BroadcastSectionHeaderView()
