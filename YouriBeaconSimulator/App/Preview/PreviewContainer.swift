@@ -60,4 +60,21 @@ class PreviewContainer {
 			fatalError("Failed to create preview SwiftData container: \(error)")
 		}
 	}()
+	
+	static var discoveredBeaconPreviews: [DiscoveredBeacon] {
+		let defaultUUID = UUID(uuidString: "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0")!
+		let now = Date.now
+		let staleDate = now.addingTimeInterval(-60.0) // 1 minute ago
+		return [
+			DiscoveredBeacon(uuid: defaultUUID, major: 1, minor: 100, rssi: -35, accuracy: 0.2, proximity: .immediate, lastSeen: now),
+			
+			DiscoveredBeacon(uuid: defaultUUID, major: 1, minor: 101, rssi: -60, accuracy: 1.5, proximity: .near, lastSeen: now),
+			
+			DiscoveredBeacon(uuid: defaultUUID, major: 1, minor: 102, rssi: -85, accuracy: 5.0, proximity: .far, lastSeen: now),
+			
+			DiscoveredBeacon(uuid: defaultUUID, major: 1, minor: 103, rssi: 0, accuracy: -1.0, proximity: .unknown, lastSeen: now),
+			
+			DiscoveredBeacon(uuid: defaultUUID, major: 2, minor: 200, rssi: -90, accuracy: 8.0, proximity: .far, lastSeen: staleDate)
+		]
+	}
 }

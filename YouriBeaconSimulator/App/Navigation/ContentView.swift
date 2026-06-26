@@ -11,6 +11,7 @@ import SwiftData
 struct ContentView: View {
 	@Environment(\.modelContext) private var modelContext
 	
+	var isPreview: Bool = false
 	let preferenceService: PreferenceService
 	let permissionService: PermissionService
 	let beaconBroadcastService: BeaconBroadcastService
@@ -29,7 +30,8 @@ struct ContentView: View {
 			DiscoverView(discoverViewModel: DiscoverViewModel(
 				modelContext: modelContext,
 				preferenceService: preferenceService,
-				permissionService: permissionService
+				permissionService: permissionService,
+				previewBeacons: isPreview ? PreviewContainer.discoveredBeaconPreviews : nil
 			))
 			.tabItem {
 				Label("Discover", systemImage: "dot.radiowaves.up.forward")
@@ -42,6 +44,7 @@ struct ContentView: View {
 	let permissionService = PermissionService()
 	
 	ContentView(
+		isPreview: true,
 		preferenceService: PreferenceService(),
 		permissionService: permissionService,
 		beaconBroadcastService: BeaconBroadcastService(permissionService: permissionService)

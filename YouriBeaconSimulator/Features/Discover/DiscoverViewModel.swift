@@ -16,8 +16,12 @@ class DiscoverViewModel {
 	private var modelContext: ModelContext
 	private var preferenceService: PreferenceService
 	private var permissionService: PermissionService
+	// TODO: Discovery Service
+	
+	private var previewBeacons: [DiscoveredBeacon]?
 	
 	private(set) var projects: [BroadcastProject] = []
+	private(set) var discoveredBeacons: [DiscoveredBeacon] = []
 	
 	var bluetoothAuthorization: CBManagerAuthorization {
 		permissionService.bluetoothAuthorization
@@ -30,6 +34,7 @@ class DiscoverViewModel {
 	}
 	
 	var isDiscovering: Bool = false
+	var selectedBeacon: DiscoveredBeacon? = nil
 	
 	var selectedProject: BroadcastProject? = nil
 	var proximityUUID: String = ""
@@ -53,10 +58,18 @@ class DiscoverViewModel {
 	}
 #endif
 	
-	init(modelContext: ModelContext, preferenceService: PreferenceService, permissionService: PermissionService) {
+	init(
+		modelContext: ModelContext,
+		preferenceService: PreferenceService,
+		permissionService: PermissionService,
+		// TODO: Discovery Service
+		previewBeacons: [DiscoveredBeacon]? = nil
+	) {
 		self.modelContext = modelContext
 		self.preferenceService = preferenceService
 		self.permissionService = permissionService
+		// TODO: Discovery Service
+		self.previewBeacons = previewBeacons
 		
 		if let savedUUID = preferenceService.selectedUUID {
 			self.proximityUUID = savedUUID.uuidString
@@ -105,12 +118,29 @@ class DiscoverViewModel {
 			preferenceService.selectedUUID = uuid
 			isDiscovering = true
 			
+			// For Preview Only
+			if let previewBeacons {
+				self.discoveredBeacons = previewBeacons.map { mockBeacon in
+					DiscoveredBeacon(
+						uuid: uuid,
+						major: mockBeacon.major,
+						minor: mockBeacon.minor,
+						rssi: mockBeacon.rssi,
+						accuracy: mockBeacon.accuracy,
+						proximity: mockBeacon.proximity,
+						lastSeen: mockBeacon.lastSeen
+					)
+				}
+				return
+			}
+			
 			// TODO: Trigger actual core location discovery
 		}
 	}
 	
 	func stopDiscovery() {
 		isDiscovering = false
+		discoveredBeacons = []
 		
 		// TODO: Stop actual core location discovery
 	}

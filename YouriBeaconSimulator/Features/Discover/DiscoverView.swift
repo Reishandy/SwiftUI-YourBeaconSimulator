@@ -12,9 +12,6 @@ import CoreLocation
 struct DiscoverView: View {
 	@State var discoverViewModel: DiscoverViewModel
 	
-	// TODO: Debug
-	@State private var selectedItem: String?
-	
 	var body: some View {
 		NavigationSplitView {
 			Group {
@@ -44,8 +41,7 @@ struct DiscoverView: View {
 				} else {
 					ZStack {
 						if discoverViewModel.isDiscovering {
-							// TODO: Empty state with animation icon and stop button
-							if true {
+							if discoverViewModel.discoveredBeacons.isEmpty {
 								EmptyStateView(
 									systemImage: "dot.radiowaves.up.forward",
 									title: "Discovering",
@@ -127,9 +123,8 @@ struct DiscoverView: View {
 				}
 			}
 		} detail: {
-			if let selectedItem {
-				Text("Selected: \(selectedItem)")
-					.navigationTitle(selectedItem)
+			if let selectedBeacon = discoverViewModel.selectedBeacon {
+				Text("Selected: \(selectedBeacon.id)")
 			} else {
 				Text("Select an item from the sidebar")
 					.foregroundColor(.secondary)
@@ -140,9 +135,10 @@ struct DiscoverView: View {
 	@ViewBuilder
 	private var listView: some View {
 		// TODO: Haptic when new entry comes in
-		// TODO: Item list
-		List(1...99, id: \.self, selection: $selectedItem) { item in
-			NavigationLink("Item \(item)", value: "Item \(item)")
+		List(discoverViewModel.discoveredBeacons, selection: $discoverViewModel.selectedBeacon) { beacon in
+			NavigationLink(value: beacon) {
+				DiscoverItemView(discoveredBeacon: beacon)
+			}
 		}
 	}
 }
@@ -150,5 +146,10 @@ struct DiscoverView: View {
 #Preview {
 	let permissionService = PermissionService()
 	
-	DiscoverView(discoverViewModel: DiscoverViewModel(modelContext: PreviewContainer.shared.mainContext, preferenceService: PreferenceService(), permissionService: permissionService))
+	DiscoverView(discoverViewModel: DiscoverViewModel(
+		modelContext: PreviewContainer.shared.mainContext,
+		preferenceService: PreferenceService(),
+		permissionService: permissionService,
+		previewBeacons: PreviewContainer.discoveredBeaconPreviews
+	))
 }

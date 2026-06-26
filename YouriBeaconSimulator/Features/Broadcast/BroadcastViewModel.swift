@@ -62,7 +62,11 @@ class BroadcastViewModel {
 	var addMajorID: Int? = nil
 	var addMinorID: Int? = nil
 	
-	init(modelContext: ModelContext, permissionService: PermissionService, broadcastService: BeaconBroadcastService) {
+	init(
+		modelContext: ModelContext,
+		permissionService: PermissionService,
+		broadcastService: BeaconBroadcastService
+	) {
 		self.modelContext = modelContext
 		self.permissionService = permissionService
 		self.broadcastService = broadcastService
