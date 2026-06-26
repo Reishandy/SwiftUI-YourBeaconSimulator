@@ -12,9 +12,16 @@ import CoreBluetooth
 struct BroadcastView: View {
 	@State var broadcastViewModel: BroadcastViewModel
 	
-	// TODO: Check what happens if we turn of bt when is broadcasting
-	//			escpecialy the currentBroadcastingBeacon
 	var body: some View {
+		let animatedSearchBinding = Binding<String>(
+			get: { broadcastViewModel.searchTerm },
+			set: { newValue in
+				withAnimation(.default) {
+					broadcastViewModel.searchTerm = newValue
+				}
+			}
+		)
+		
 		NavigationStack {
 			Group {
 				if broadcastViewModel.bluetoothAuthorization == .notDetermined {
@@ -76,16 +83,15 @@ struct BroadcastView: View {
 							.background(.background)
 						}
 					}
-					.animation(.default, value: broadcastViewModel.searchTerm)
 #if os(iOS)
 					.searchable(
-						text: $broadcastViewModel.searchTerm,
+						text: animatedSearchBinding,
 						placement: .navigationBarDrawer(displayMode: .always),
 						prompt: "Search Project or Beacon..."
 					)
 #else
 					.searchable(
-						text: $broadcastViewModel.searchTerm,
+						text: animatedSearchBinding,
 						prompt: "Search Project or Beacon..."
 					)
 #endif

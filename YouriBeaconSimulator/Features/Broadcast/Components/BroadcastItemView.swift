@@ -73,8 +73,15 @@ struct BroadcastItemView: View {
 			}
 			
 			if isBroadcasting {
-				MeasuredTXPowerView(initialValue: -59) { power in
-					onMeasuredTxPowerChange(power)
+				VStack(spacing: 12) {
+					MeasuredTXPowerView(initialValue: -59) { power in
+						onMeasuredTxPowerChange(power)
+					}
+					
+					Text("Broadcasting only works when the app is in foreground.")
+						.font(.caption)
+						.opacity(0.6)
+						.multilineTextAlignment(.center)
 				}
 			}
 		}
