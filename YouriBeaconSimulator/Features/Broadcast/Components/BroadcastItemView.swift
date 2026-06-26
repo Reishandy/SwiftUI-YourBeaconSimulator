@@ -70,6 +70,7 @@ struct BroadcastItemView: View {
 #endif
 				.disabled(shouldDisableBroadcast)
 				.geometryGroup()
+				.sensoryFeedback(.impact(weight: .light), trigger: isBroadcasting)
 			}
 			
 			if isBroadcasting {

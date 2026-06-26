@@ -10,6 +10,9 @@ import SwiftData
 import CoreBluetooth
 import CoreLocation
 import UserNotifications
+#if os(iOS)
+import UIKit
+#endif
 
 @Observable
 class DiscoverViewModel {
@@ -134,6 +137,9 @@ class DiscoverViewModel {
 				return
 			}
 			
+			// TODO: Trigger haptic only if it is new beacon
+			triggerLightHaptic()
+			
 			// TODO: Trigger actual core location discovery
 		}
 	}
@@ -143,5 +149,15 @@ class DiscoverViewModel {
 		discoveredBeacons = []
 		
 		// TODO: Stop actual core location discovery
+	}
+	
+	private func triggerLightHaptic() {
+#if os(iOS)
+		Task { @MainActor in
+			let generator = UIImpactFeedbackGenerator(style: .light)
+			generator.prepare()
+			generator.impactOccurred()
+		}
+#endif
 	}
 }

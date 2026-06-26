@@ -134,7 +134,7 @@ struct DiscoverView: View {
 	
 	@ViewBuilder
 	private var listView: some View {
-		// TODO: Haptic when new entry comes in
+		// TODO: Make sure animation happens on beacon change state
 		List(discoverViewModel.discoveredBeacons, selection: $discoverViewModel.selectedBeacon) { beacon in
 			NavigationLink(value: beacon) {
 				DiscoverItemView(discoveredBeacon: beacon)

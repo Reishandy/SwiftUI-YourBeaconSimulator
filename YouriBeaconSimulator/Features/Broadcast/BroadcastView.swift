@@ -184,7 +184,6 @@ struct BroadcastView: View {
 							isBroadcasting: broadcastViewModel.currentBroadcastingBeacon == beacon,
 							shouldDisableBroadcast: broadcastViewModel.currentBroadcastingBeacon != nil && broadcastViewModel.currentBroadcastingBeacon != beacon,
 							onBroadcastClick: {
-								// TODO: Haptic when pressed
 								broadcastViewModel.broadcast(beacon)
 							},
 							onDeleteClick: {
