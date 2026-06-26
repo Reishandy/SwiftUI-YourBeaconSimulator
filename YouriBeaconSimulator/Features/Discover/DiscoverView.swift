@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DiscoverView: View {
+	@State var discoverViewModel: DiscoverViewModel
+	
 	// TODO: Discover View
 	let items = (1...99).map { "Item \($0)" }
 	
@@ -36,5 +39,7 @@ struct DiscoverView: View {
 }
 
 #Preview {
-	DiscoverView()
+	let permissionService = PermissionService()
+	
+	DiscoverView(discoverViewModel: DiscoverViewModel(modelContext: PreviewContainer.shared.mainContext, preferenceService: PreferenceService(), permissionService: permissionService))
 }

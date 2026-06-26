@@ -10,11 +10,14 @@ import SwiftData
 
 @main
 struct YouriBeaconSimulatorApp: App {
+	@State var preferenceService: PreferenceService
 	@State var permissionService: PermissionService
 	@State var beaconBroadcastService: BeaconBroadcastService
 	
 	init() {
 		let permissionService = PermissionService()
+		
+		self._preferenceService = State(initialValue: PreferenceService())
 		self._permissionService = State(initialValue: permissionService)
 		self._beaconBroadcastService = State(initialValue: BeaconBroadcastService(permissionService: permissionService))
 	}
@@ -22,6 +25,7 @@ struct YouriBeaconSimulatorApp: App {
 	var body: some Scene {
 		WindowGroup {
 			ContentView(
+				preferenceService: PreferenceService(),
 				permissionService: permissionService,
 				beaconBroadcastService: beaconBroadcastService
 			)
