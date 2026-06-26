@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftData
+import CoreBluetooth
+import CoreLocation
 
 @Observable
 class DiscoverViewModel {
@@ -16,10 +18,32 @@ class DiscoverViewModel {
 	
 	private(set) var projects: [BroadcastProject] = []
 	
+	var bluetoothAuthorization: CBManagerAuthorization {
+		permissionService.bluetoothAuthorization
+	}
+	var bluetoothState: CBManagerState {
+		permissionService.bluetoothState
+	}
+	var locationAuthorization: CLAuthorizationStatus {
+		permissionService.locationAuthorization
+	}
+	
+	var isDiscovering: Bool = false
+	
+	var selectedProject: BroadcastProject? = nil
+	var proximityUUID: String = ""
+	var isBackgroundEnabled: Bool = false
+	var isNotificationPermissionGranted: Bool = false
+	
 	init(modelContext: ModelContext, preferenceService: PreferenceService, permissionService: PermissionService) {
 		self.modelContext = modelContext
 		self.preferenceService = preferenceService
 		self.permissionService = permissionService
+		
+		if let savedUUID = preferenceService.selectedUUID {
+			self.proximityUUID = savedUUID.uuidString
+			self.startDiscovery()
+		}
 		
 		self.fetchData()
 	}
@@ -29,8 +53,39 @@ class DiscoverViewModel {
 			projects = try modelContext.fetch(FetchDescriptor<BroadcastProject>(
 				sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
 			))
+			
+			if !proximityUUID.isEmpty {
+				selectedProject = projects.first(where: { $0.proximityUUID.caseInsensitiveCompare(proximityUUID) == .orderedSame })
+			}
 		} catch {
 			print("ERROR > Failed populating DiscoverViewModel: \(error)")
 		}
+	}
+	
+	func requestBluetoothPermission() {
+		Task {
+			await permissionService.requestBluetoothPermission()
+		}
+	}
+	
+	func requestLocationPermission() {
+		Task {
+			await permissionService.requestLocationPermission()
+		}
+	}
+	
+	func startDiscovery() {
+		if let uuid = UUID(uuidString: proximityUUID) {
+			preferenceService.selectedUUID = uuid
+			isDiscovering = true
+			
+			// TODO: Trigger actual core location discovery
+		}
+	}
+	
+	func stopDiscovery() {
+		isDiscovering = false
+		
+		// TODO: Stop actual core location discovery
 	}
 }

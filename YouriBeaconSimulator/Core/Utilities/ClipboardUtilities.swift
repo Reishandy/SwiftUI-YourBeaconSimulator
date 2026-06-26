@@ -22,4 +22,12 @@ struct ClipboardUtilities {
 		UIPasteboard.general.string = text
 #endif
 	}
+	
+	static func paste() -> String? {
+#if os(macOS)
+		return NSPasteboard.general.string(forType: .string)
+#else
+		return UIPasteboard.general.string
+#endif
+	}
 }

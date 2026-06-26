@@ -100,10 +100,8 @@ struct BroadcastView: View {
 			.navigationTitle("Broadcast")
 			.toolbar {
 				ToolbarItem(placement: .primaryAction) {
-					Button {
+					Button("Add") {
 						broadcastViewModel.isAddSheetPresented = true
-					} label: {
-						Label("Add", systemImage: "plus")
 					}
 					.disabled(broadcastViewModel.bluetoothAuthorization != .allowedAlways || broadcastViewModel.currentBroadcastingBeacon != nil)
 				}
