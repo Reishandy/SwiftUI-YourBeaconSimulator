@@ -10,6 +10,7 @@ import CoreLocation
 import CoreBluetooth
 import UserNotifications
 import Observation
+import UIKit
 
 @Observable
 @MainActor
@@ -39,6 +40,26 @@ public class PermissionService: NSObject {
 		Task {
 			await checkNotificationPermission()
 		}
+		
+#if os(iOS)
+		NotificationCenter.default.addObserver(
+			forName: UIApplication.willEnterForegroundNotification,
+			object: nil,
+			queue: .main
+		) { [weak self] _ in
+			guard let self = self else { return }
+			
+			Task {
+				await self.checkNotificationPermission()
+				
+				// TODO: Update this when the beacon detection is implemented
+				//			to use the existing location manager?
+				await MainActor.run {
+					self.locationAuthorization = CLLocationManager().authorizationStatus
+				}
+			}
+		}
+#endif
 	}
 	
 	public func requestBluetoothPermission() async -> CBManagerAuthorization {

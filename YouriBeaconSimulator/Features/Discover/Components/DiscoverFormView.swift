@@ -88,7 +88,12 @@ struct DiscoverFormView: View {
 						.frame(maxWidth: .infinity)
 					}
 				} footer: {
-					Text("This will trigger a notification whenever you enter or exit the range of a beacon with this UUID while the app is in the background or closed.")
+					if hasDeniedPermissions {
+						Text("To receive proximity alerts while the app is closed, you must grant both \"Always\" location access and Notification permissions.")
+					} else {
+						Text("This will trigger a notification whenever you enter or exit the range of a beacon with this UUID while the app is in the background or closed.")
+						
+					}
 				}
 #endif
 				

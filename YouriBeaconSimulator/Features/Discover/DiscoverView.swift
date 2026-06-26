@@ -14,8 +14,6 @@ struct DiscoverView: View {
 	
 	// TODO: Debug
 	@State private var selectedItem: String?
-	// TODO: Fix form bg toggle only request the notification
-	// TODO: Fix open settings to enable for notification does not update when u enable in setting and go back to the app
 	
 	var body: some View {
 		NavigationSplitView {
@@ -90,7 +88,8 @@ struct DiscoverView: View {
 					}
 				}
 			}
-			.navigationTitle("Discover")
+			.navigationTitle(discoverViewModel.isDiscovering ? "Discovering" : "Discover")
+			.navigationSubtitle(discoverViewModel.isDiscovering ? discoverViewModel.proximityUUID : "")
 			.navigationSplitViewColumnWidth(min: 300, ideal: 300, max: 500)
 			.toolbar {
 				if discoverViewModel.isDiscovering {
@@ -116,7 +115,9 @@ struct DiscoverView: View {
 	
 	@ViewBuilder
 	private var listView: some View {
+		// TODO: Haptic when new entry comes in
 		// TODO: Item list
+		// TODO: Empty state with animation icon and stop button
 		List(1...99, id: \.self, selection: $selectedItem) { item in
 			NavigationLink("Item \(item)", value: "Item \(item)")
 		}

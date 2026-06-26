@@ -47,6 +47,7 @@ class DiscoverViewModel {
 	var hasDeniedBackgroundPermissions: Bool {
 		permissionService.locationAuthorization == .denied ||
 		permissionService.locationAuthorization == .restricted ||
+		permissionService.locationAuthorization == .authorizedWhenInUse ||
 		permissionService.notificationAuthorization == .denied
 	}
 	
