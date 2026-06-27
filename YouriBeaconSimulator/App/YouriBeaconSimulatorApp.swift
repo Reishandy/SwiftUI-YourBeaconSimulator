@@ -15,6 +15,7 @@ struct YouriBeaconSimulatorApp: App {
 	@State var preferenceService: PreferenceService
 	@State var permissionService: PermissionService
 	@State var beaconBroadcastService: BeaconBroadcastService
+	@State var backgroundMonitorService: BackgroundMonitorService
 	
 	init() {
 		let permissionService = PermissionService()
@@ -22,6 +23,7 @@ struct YouriBeaconSimulatorApp: App {
 		self._preferenceService = State(initialValue: PreferenceService())
 		self._permissionService = State(initialValue: permissionService)
 		self._beaconBroadcastService = State(initialValue: BeaconBroadcastService(permissionService: permissionService))
+		self._backgroundMonitorService = State(initialValue: BackgroundMonitorService())
 	}
 	
 	var body: some Scene {
@@ -29,7 +31,8 @@ struct YouriBeaconSimulatorApp: App {
 			ContentView(
 				preferenceService: PreferenceService(),
 				permissionService: permissionService,
-				beaconBroadcastService: beaconBroadcastService
+				beaconBroadcastService: beaconBroadcastService,
+				backgroundMonitorService: backgroundMonitorService
 			)
 			.modelContainer(for: [BroadcastProject.self, BroadcastBeacon.self])
 #if os(macOS)

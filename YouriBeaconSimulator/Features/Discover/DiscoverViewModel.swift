@@ -20,6 +20,7 @@ class DiscoverViewModel {
 	private var preferenceService: PreferenceService
 	private var permissionService: PermissionService
 	private var discoveryService: BeaconDiscoveryService
+	private var backgroundMonitorService: BackgroundMonitorService
 	
 	private var previewBeacons: [DiscoveredBeacon]?
 	
@@ -58,7 +59,14 @@ class DiscoverViewModel {
 	
 	var isBackgroundEnabled: Bool {
 		get { preferenceService.isBackgroundNotificationEnabled }
-		set { preferenceService.isBackgroundNotificationEnabled = newValue }
+		set {
+			preferenceService.isBackgroundNotificationEnabled = newValue
+#if os(iOS)
+			if let uuid = UUID(uuidString: proximityUUID) {
+				backgroundMonitorService.updateMonitoring(for: uuid, isEnabled: newValue)
+			}
+#endif
+		}
 	}
 	
 	var isBackgroundReady: Bool {
@@ -80,12 +88,14 @@ class DiscoverViewModel {
 		preferenceService: PreferenceService,
 		permissionService: PermissionService,
 		discoveryService: BeaconDiscoveryService,
+		backgroundMonitorService: BackgroundMonitorService,
 		previewBeacons: [DiscoveredBeacon]? = nil
 	) {
 		self.modelContext = modelContext
 		self.preferenceService = preferenceService
 		self.permissionService = permissionService
 		self.discoveryService = discoveryService
+		self.backgroundMonitorService = backgroundMonitorService
 		self.previewBeacons = previewBeacons
 		
 		if let savedUUID = preferenceService.selectedUUID {
@@ -155,6 +165,14 @@ class DiscoverViewModel {
 				}
 				return
 			}
+			
+#if os(iOS)
+			// Catch edge case: Ensure background tracking is registered
+			// if the user types a new UUID but the toggle was already on.
+			if isBackgroundEnabled {
+				backgroundMonitorService.updateMonitoring(for: uuid, isEnabled: true)
+			}
+#endif
 			
 			discoveryService.startDiscovery(uuid: uuid) {
 #if os(iOS)

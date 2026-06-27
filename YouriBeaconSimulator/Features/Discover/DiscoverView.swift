@@ -203,6 +203,7 @@ struct DiscoverView: View {
 		preferenceService: PreferenceService(),
 		permissionService: permissionService,
 		discoveryService: BeaconDiscoveryService(permissionService: permissionService),
+		backgroundMonitorService: BackgroundMonitorService(),
 		previewBeacons: PreviewContainer.discoveredBeaconPreviews
 	))
 }

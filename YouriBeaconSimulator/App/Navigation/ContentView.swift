@@ -15,6 +15,7 @@ struct ContentView: View {
 	let preferenceService: PreferenceService
 	let permissionService: PermissionService
 	let beaconBroadcastService: BeaconBroadcastService
+	let backgroundMonitorService: BackgroundMonitorService
 	
 	var body: some View {
 		TabView {
@@ -32,6 +33,7 @@ struct ContentView: View {
 				preferenceService: preferenceService,
 				permissionService: permissionService,
 				discoveryService: BeaconDiscoveryService(permissionService: permissionService),
+				backgroundMonitorService: backgroundMonitorService,
 				previewBeacons: isPreview ? PreviewContainer.discoveredBeaconPreviews : nil
 			))
 			.tabItem {
@@ -48,7 +50,8 @@ struct ContentView: View {
 		isPreview: true,
 		preferenceService: PreferenceService(),
 		permissionService: permissionService,
-		beaconBroadcastService: BeaconBroadcastService(permissionService: permissionService)
+		beaconBroadcastService: BeaconBroadcastService(permissionService: permissionService),
+		backgroundMonitorService: BackgroundMonitorService()
 	)
 	.modelContainer(PreviewContainer.shared)
 }
