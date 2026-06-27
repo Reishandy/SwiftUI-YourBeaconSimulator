@@ -35,18 +35,24 @@ struct BroadcastView: View {
 					}
 				} else if broadcastViewModel.bluetoothAuthorization == .denied ||
 							broadcastViewModel.bluetoothAuthorization == .restricted {
+#if os(iOS)
 					EmptyStateView(
 						systemImage: "exclamationmark.lock.fill",
 						title: "Bluetooth Access Blocked",
 						subtitle: "Please enable Bluetooth permission in Settings to simulate an iBeacon.",
 						actionText: "Open Settings"
 					) {
-#if os(iOS)
 						if let url = URL(string: UIApplication.openSettingsURLString) {
 							UIApplication.shared.open(url)
 						}
-#endif
 					}
+#else
+					EmptyStateView(
+						systemImage: "exclamationmark.lock.fill",
+						title: "Bluetooth Access Blocked",
+						subtitle: "Please enable Bluetooth permission in System Settings to discover iBeacons."
+					)
+#endif
 				} else if broadcastViewModel.bluetoothAuthorization == .allowedAlways &&
 							broadcastViewModel.bluetoothState == .poweredOff {
 					EmptyStateView(

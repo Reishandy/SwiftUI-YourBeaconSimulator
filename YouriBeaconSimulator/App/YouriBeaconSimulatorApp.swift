@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct YouriBeaconSimulatorApp: App {
+	@Environment(\.scenePhase) private var scenePhase
+	
 	@State var preferenceService: PreferenceService
 	@State var permissionService: PermissionService
 	@State var beaconBroadcastService: BeaconBroadcastService
@@ -38,5 +40,10 @@ struct YouriBeaconSimulatorApp: App {
 #if os(macOS)
 		.windowResizability(.contentSize)
 #endif
+		.onChange(of: scenePhase) { oldPhase, newPhase in
+			if newPhase == .background {
+				beaconBroadcastService.stopBroadcasting()
+			}
+		}
 	}
 }

@@ -23,7 +23,7 @@ struct MeasuredTXPowerView: View {
 	
 	var body: some View {
 		VStack {
-			Slider(value: $measuredTxPower, in: (-100)...(-30)) {
+			Slider(value: $measuredTxPower, in: (-100)...(0)) {
 #if os(iOS)
 				Text("Measured TX Power")
 #endif
@@ -31,7 +31,7 @@ struct MeasuredTXPowerView: View {
 				Text("-100 dBm")
 					.font(.caption)
 			} maximumValueLabel: {
-				Text("-30 dBm")
+				Text("0 dBm")
 					.font(.caption)
 			} onEditingChanged: { _ in
 				onMeasuredTxPowerChange(Int(measuredTxPower.rounded()))
@@ -44,7 +44,7 @@ struct MeasuredTXPowerView: View {
 				
 				Spacer()
 				
-				Text("Sets the measured TX power.")
+				Text("Current measured TX power: \(String(measuredTxPower.rounded())) dBm")
 					.font(.caption2)
 					.opacity(0.8)
 				

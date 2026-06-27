@@ -19,9 +19,7 @@ struct DiscoveredBeacon: Identifiable, Equatable, Sendable, Hashable {
 	var proximity: BeaconProximity
 	var lastSeen: Date
 	
-	var isCurrentlyActive: Bool {
-		Date.now.timeIntervalSince(lastSeen) < 3.0 // 3 Seconds stale treshold
-	}
+	var isCurrentlyActive: Bool = true
 }
 
 extension DiscoveredBeacon {

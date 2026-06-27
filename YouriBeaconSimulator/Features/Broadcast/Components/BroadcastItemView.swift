@@ -79,10 +79,9 @@ struct BroadcastItemView: View {
 						onMeasuredTxPowerChange(power)
 					}
 					
-					Text("Broadcasting only works when the app is in foreground.")
+					Text("Note: Broadcasting only works when the app is in the foreground. Due to how iOS internally processes iBeacons, dynamic changes to the Measured TX Power might not be detected at all on iPhones. Mac simulators will detect these changes instantly.")
 						.font(.caption)
 						.opacity(0.6)
-						.multilineTextAlignment(.center)
 				}
 			}
 		}

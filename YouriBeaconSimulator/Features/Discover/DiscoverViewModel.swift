@@ -19,12 +19,14 @@ class DiscoverViewModel {
 	private var modelContext: ModelContext
 	private var preferenceService: PreferenceService
 	private var permissionService: PermissionService
-	// TODO: Discovery Service
+	private var discoveryService: BeaconDiscoveryService
 	
 	private var previewBeacons: [DiscoveredBeacon]?
 	
 	private(set) var projects: [BroadcastProject] = []
-	private(set) var discoveredBeacons: [DiscoveredBeacon] = []
+	var discoveredBeacons: [DiscoveredBeacon] {
+		previewBeacons ?? discoveryService.discoveredBeacons
+	}
 	
 	var bluetoothAuthorization: CBManagerAuthorization {
 		permissionService.bluetoothAuthorization
@@ -65,18 +67,17 @@ class DiscoverViewModel {
 		modelContext: ModelContext,
 		preferenceService: PreferenceService,
 		permissionService: PermissionService,
-		// TODO: Discovery Service
+		discoveryService: BeaconDiscoveryService,
 		previewBeacons: [DiscoveredBeacon]? = nil
 	) {
 		self.modelContext = modelContext
 		self.preferenceService = preferenceService
 		self.permissionService = permissionService
-		// TODO: Discovery Service
+		self.discoveryService = discoveryService
 		self.previewBeacons = previewBeacons
 		
 		if let savedUUID = preferenceService.selectedUUID {
 			self.proximityUUID = savedUUID.uuidString
-			self.startDiscovery()
 		}
 		
 		self.fetchData()
@@ -102,6 +103,12 @@ class DiscoverViewModel {
 		}
 	}
 	
+	func requestBluetoothPermission() {
+		Task {
+			await permissionService.requestBluetoothPermission()
+		}
+	}
+	
 #if os(iOS)
 	func requestBackgroundPermissions() {
 		Task {
@@ -123,7 +130,7 @@ class DiscoverViewModel {
 			
 			// For Preview Only
 			if let previewBeacons {
-				self.discoveredBeacons = previewBeacons.map { mockBeacon in
+				self.discoveryService.discoveredBeacons = previewBeacons.map { mockBeacon in
 					DiscoveredBeacon(
 						uuid: uuid,
 						major: mockBeacon.major,
@@ -137,27 +144,21 @@ class DiscoverViewModel {
 				return
 			}
 			
-			// TODO: Trigger haptic only if it is new beacon
-			triggerLightHaptic()
-			
-			// TODO: Trigger actual core location discovery
+			discoveryService.startDiscovery(uuid: uuid) {
+#if os(iOS)
+				// Trigger light haptic on new discovery on iOS
+				Task { @MainActor in
+					let generator = UIImpactFeedbackGenerator(style: .light)
+					generator.prepare()
+					generator.impactOccurred()
+				}
+#endif
+			}
 		}
 	}
 	
 	func stopDiscovery() {
 		isDiscovering = false
-		discoveredBeacons = []
-		
-		// TODO: Stop actual core location discovery
-	}
-	
-	private func triggerLightHaptic() {
-#if os(iOS)
-		Task { @MainActor in
-			let generator = UIImpactFeedbackGenerator(style: .light)
-			generator.prepare()
-			generator.impactOccurred()
-		}
-#endif
+		discoveryService.stopDiscovery()
 	}
 }

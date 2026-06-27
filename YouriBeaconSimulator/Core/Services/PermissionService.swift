@@ -54,8 +54,6 @@ public class PermissionService: NSObject {
 			Task {
 				await self.checkNotificationPermission()
 				
-				// TODO: Update this when the beacon detection is implemented
-				//			to use the existing location manager?
 				await MainActor.run {
 					self.locationAuthorization = CLLocationManager().authorizationStatus
 				}

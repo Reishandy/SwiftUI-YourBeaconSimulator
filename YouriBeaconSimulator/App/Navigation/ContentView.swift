@@ -31,6 +31,7 @@ struct ContentView: View {
 				modelContext: modelContext,
 				preferenceService: preferenceService,
 				permissionService: permissionService,
+				discoveryService: BeaconDiscoveryService(permissionService: permissionService),
 				previewBeacons: isPreview ? PreviewContainer.discoveredBeaconPreviews : nil
 			))
 			.tabItem {
