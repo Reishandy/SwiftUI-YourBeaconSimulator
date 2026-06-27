@@ -30,6 +30,8 @@ final class PreferenceService {
 		}
 	}
 	
+	// TODO: Track if the user changed the permission loction from always to other
+	
 	init() {
 		if let uuidString = UserDefaults.standard.string(forKey: Keys.selectedUUID),
 		   let savedUUID = UUID(uuidString: uuidString) {

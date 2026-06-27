@@ -100,10 +100,11 @@ public class PermissionService: NSObject {
 	}
 	
 	public func requestAlwaysLocationPermission() {
-		let manager = CLLocationManager()
-		self.locationManager = manager
-		manager.delegate = self
-		manager.requestAlwaysAuthorization()
+		if locationManager == nil {
+			locationManager = CLLocationManager()
+			locationManager?.delegate = self
+		}
+		locationManager?.requestAlwaysAuthorization()
 	}
 	
 	public func checkNotificationPermission() async {

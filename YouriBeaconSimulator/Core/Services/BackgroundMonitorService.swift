@@ -11,8 +11,11 @@ import Observation
 
 @Observable
 class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
+	// TODO: Fix cold launch
 #if os(iOS)
 	private var monitor: CLMonitor?
+	private var backgroundActivitySession: CLBackgroundActivitySession?
+	private var monitoringTask: Task<Void, any Error>?
 	
 	private var backgroundLocationManager: CLLocationManager = CLLocationManager()
 	private var discoveredBackgroundBeacons: [CLBeacon] = []
@@ -23,7 +26,6 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 	
 	override init() {
 		super.init()
-		
 #if os(iOS)
 		backgroundLocationManager.delegate = self
 		backgroundLocationManager.allowsBackgroundLocationUpdates = true
@@ -36,25 +38,19 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 	
 #if os(iOS)
 	private func setupMonitorAndListen() async {
-		if monitor != nil { return }
+		guard monitor == nil else { return }
 		
 		let authStatus = CLLocationManager().authorizationStatus
-		guard authStatus != .notDetermined else {
-			return
-		}
+		guard authStatus != .notDetermined else { return }
 		
-		monitor = await CLMonitor("BeaconBackgroundMonitor")
-		guard let activeMonitor = monitor else { return }
+		backgroundActivitySession = CLBackgroundActivitySession()
 		
-		Task {
-			while !Task.isCancelled {
-				do {
-					for try await event in await activeMonitor.events {
-						await handleEvent(event)
-					}
-				} catch {
-					try? await Task.sleep(for: .seconds(3))
-				}
+		let newMonitor = await CLMonitor("BeaconBackgroundMonitor")
+		self.monitor = newMonitor
+		
+		monitoringTask = Task {
+			for try await event in await newMonitor.events {
+				await handleEvent(event)
 			}
 		}
 		
@@ -66,20 +62,19 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 		
 		switch event.state {
 		case .satisfied:
+			// TODO: This triggers twice
 			NotificationUtilities.send(
 				title: "Beacon Region Entered",
 				body: "You entered the region for \(uuid.uuidString)."
 			)
 			
 			let beacons = await performBackgroundRangingBurst(for: uuid)
-			
 			if !beacons.isEmpty {
 				var bodyText = "Found \(beacons.count) beacons nearby:\n"
 				for beacon in beacons {
 					let distance = beacon.accuracy < 0 ? "Unknown" : String(format: "%.2fm", beacon.accuracy)
 					bodyText += "• Major: \(beacon.major) Minor: \(beacon.minor) | \(distance) | \(beacon.rssi) dBm\n"
 				}
-				
 				NotificationUtilities.send(
 					title: "Beacons Detected!",
 					body: bodyText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -87,6 +82,7 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 			}
 			
 		case .unsatisfied:
+			// TODO: This triggers twice
 			NotificationUtilities.send(
 				title: "Beacon Lost",
 				body: "You left the range of \(uuid.uuidString)"
@@ -104,18 +100,14 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 		
 		return await withCheckedContinuation { continuation in
 			self.rangingContinuation = continuation
-			
 			DispatchQueue.main.async {
 				let constraint = CLBeaconIdentityConstraint(uuid: uuid)
 				self.backgroundLocationManager.startRangingBeacons(satisfying: constraint)
 				
-				// 7-second burst
 				DispatchQueue.main.asyncAfter(deadline: .now() + 7.0) {
 					self.backgroundLocationManager.stopRangingBeacons(satisfying: constraint)
-					
 					let beaconsToReturn = self.discoveredBackgroundBeacons
 					self.isRanging = false
-					
 					if let cont = self.rangingContinuation {
 						self.rangingContinuation = nil
 						cont.resume(returning: beaconsToReturn)
@@ -125,10 +117,9 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
+	func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying constraint: CLBeaconIdentityConstraint) {
 		var uniqueBeacons: [CLBeacon] = []
 		var seenIds: Set<String> = []
-		
 		for beacon in beacons {
 			let id = "\(beacon.major)-\(beacon.minor)"
 			if !seenIds.contains(id) {
@@ -136,7 +127,6 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 				uniqueBeacons.append(beacon)
 			}
 		}
-		
 		if !uniqueBeacons.isEmpty {
 			self.discoveredBackgroundBeacons = uniqueBeacons
 		}
@@ -154,20 +144,17 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 			if isEnabled {
 				for existingID in currentIdentifiers where existingID != targetIdentifier {
 					await monitor.remove(existingID)
-					print("removing \(existingID)")
 				}
-				
 				if !currentIdentifiers.contains(targetIdentifier) {
 					let condition = CLMonitor.BeaconIdentityCondition(uuid: uuid)
 					await monitor.add(condition, identifier: targetIdentifier, assuming: .unknown)
-					print("adding \(targetIdentifier)")
 				}
-				
 			} else {
 				for existingID in currentIdentifiers {
 					await monitor.remove(existingID)
-					print("removing \(existingID)")
 				}
+				backgroundActivitySession?.invalidate()
+				backgroundActivitySession = nil
 			}
 		}
 	}

@@ -29,7 +29,7 @@ struct YouriBeaconSimulatorApp: App {
 	var body: some Scene {
 		WindowGroup {
 			ContentView(
-				preferenceService: PreferenceService(),
+				preferenceService: preferenceService,
 				permissionService: permissionService,
 				beaconBroadcastService: beaconBroadcastService,
 				backgroundMonitorService: backgroundMonitorService
