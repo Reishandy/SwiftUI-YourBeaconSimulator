@@ -24,7 +24,7 @@ struct BroadcastSectionHeaderView: View {
 			HStack {
 				Text(uuid)
 					.font(.callout.monospaced())
-					.opacity(0.8)
+					.foregroundColor(.secondary)
 					.lineLimit(1)
 					.minimumScaleFactor(0.5)
 				

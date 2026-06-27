@@ -25,7 +25,7 @@ struct EmptyStateView: View {
 					.bold()
 				
 				Text(subtitle)
-					.opacity(0.8)
+					.foregroundColor(.secondary)
 			}
 			.multilineTextAlignment(.center)
 			

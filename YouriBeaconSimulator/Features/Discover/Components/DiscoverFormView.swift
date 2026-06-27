@@ -47,7 +47,7 @@ struct DiscoverFormView: View {
 					
 					HStack {
 						TextField("Proximity UUID", text: $proximityUUID)
-							.opacity(selectedProject != nil ? 0.4 : 1)
+							.foregroundColor(selectedProject != nil ? .secondary : .primary)
 							.disabled(selectedProject != nil)
 							.onChange(of: proximityUUID) { _, newValue in
 								if let matchedProject = availableProjects.first(where: { $0.proximityUUID.caseInsensitiveCompare(newValue) == .orderedSame }) {

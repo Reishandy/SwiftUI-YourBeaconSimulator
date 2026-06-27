@@ -98,6 +98,7 @@ struct DiscoverView: View {
 		} detail: {
 			if !discoverViewModel.isDiscovering {
 				Text("Start iBeacon discovery first")
+					.foregroundColor(.secondary)
 			} else if let selectedBeacon = discoverViewModel.selectedBeacon {
 				DiscoveryDetailView(discoveredBeacon: selectedBeacon)
 			} else {
@@ -170,8 +171,8 @@ struct DiscoverView: View {
 	
 	@ViewBuilder
 	private var listView: some View {
-		List(discoverViewModel.discoveredBeacons, selection: $discoverViewModel.selectedBeacon) { beacon in
-			NavigationLink(value: beacon) {
+		List(discoverViewModel.discoveredBeacons, selection: $discoverViewModel.selectedBeaconID) { beacon in
+			NavigationLink(value: beacon.id) {
 				DiscoverItemView(discoveredBeacon: beacon)
 			}
 		}

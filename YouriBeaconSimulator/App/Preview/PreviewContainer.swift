@@ -74,7 +74,7 @@ class PreviewContainer {
 			
 			DiscoveredBeacon(uuid: defaultUUID, major: 1, minor: 103, rssi: 0, accuracy: -1.0, proximity: .unknown, lastSeen: now),
 			
-			DiscoveredBeacon(uuid: defaultUUID, major: 2, minor: 200, rssi: -90, accuracy: 8.0, proximity: .far, lastSeen: staleDate)
+			DiscoveredBeacon(uuid: defaultUUID, major: 2, minor: 200, rssi: -90, accuracy: 8.0, proximity: .unknown, lastSeen: staleDate, isCurrentlyActive: false)
 		]
 	}
 }

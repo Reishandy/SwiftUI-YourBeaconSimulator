@@ -32,11 +32,11 @@ struct BroadcastItemView: View {
 					HStack {
 						Text("Major: \(String(beacon.majorID))")
 							.font(.subheadline)
-							.opacity(0.8)
+							.foregroundColor(.secondary)
 						
 						Text("Minor: \(String(beacon.minorID))")
 							.font(.subheadline)
-							.opacity(0.8)
+							.foregroundColor(.secondary)
 					}
 				}
 				.foregroundStyle(shouldDisableBroadcast ? .gray : .primary)
@@ -81,7 +81,7 @@ struct BroadcastItemView: View {
 					
 					Text("Note: Broadcasting only works when the app is in the foreground. Due to how iOS internally processes iBeacons, dynamic changes to the Measured TX Power might not be detected at all on iPhones. Mac simulators will detect these changes instantly.")
 						.font(.caption)
-						.opacity(0.6)
+						.foregroundColor(.secondary)
 				}
 			}
 		}

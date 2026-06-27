@@ -39,7 +39,11 @@ class DiscoverViewModel {
 	}
 	
 	var isDiscovering: Bool = false
-	var selectedBeacon: DiscoveredBeacon? = nil
+	var selectedBeaconID: String? = nil
+	
+	var selectedBeacon: DiscoveredBeacon? {
+		discoveredBeacons.first(where: { $0.id == selectedBeaconID })
+	}
 	
 	var selectedProject: BroadcastProject? = nil
 	var proximityUUID: String = ""

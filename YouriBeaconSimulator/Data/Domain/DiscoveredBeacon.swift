@@ -18,7 +18,6 @@ struct DiscoveredBeacon: Identifiable, Equatable, Sendable, Hashable {
 	var accuracy: Double // Distance estimation in meters
 	var proximity: BeaconProximity
 	var lastSeen: Date
-	
 	var isCurrentlyActive: Bool = true
 }
 

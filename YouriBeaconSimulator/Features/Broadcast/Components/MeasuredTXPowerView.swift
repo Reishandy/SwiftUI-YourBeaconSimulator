@@ -23,12 +23,12 @@ struct MeasuredTXPowerView: View {
 	
 	var body: some View {
 		VStack {
-			Slider(value: $measuredTxPower, in: (-100)...(0)) {
+			Slider(value: $measuredTxPower, in: (-70)...(0)) {
 #if os(iOS)
 				Text("Measured TX Power")
 #endif
 			} minimumValueLabel: {
-				Text("-100 dBm")
+				Text("-70 dBm")
 					.font(.caption)
 			} maximumValueLabel: {
 				Text("0 dBm")
@@ -40,19 +40,19 @@ struct MeasuredTXPowerView: View {
 			HStack {
 				Text("Closer")
 					.font(.caption)
-					.opacity(0.8)
+					.foregroundColor(.secondary)
 				
 				Spacer()
 				
 				Text("Current measured TX power: \(String(measuredTxPower.rounded())) dBm")
 					.font(.caption2)
-					.opacity(0.8)
+					.foregroundColor(.secondary)
 				
 				Spacer()
 				
 				Text("Further")
 					.font(.caption)
-					.opacity(0.8)
+					.foregroundColor(.secondary)
 			}
 		}
 	}

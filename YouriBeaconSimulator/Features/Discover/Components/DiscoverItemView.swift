@@ -33,7 +33,7 @@ struct DiscoverItemView: View {
 				
 				Text(discoveredBeacon.uuid.uuidString)
 					.font(.callout.monospaced())
-					.opacity(0.8)
+					.foregroundColor(.secondary)
 					.lineLimit(1)
 					.minimumScaleFactor(0.5)
 			}
