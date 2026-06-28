@@ -16,24 +16,24 @@ struct YouriBeaconSimulatorApp: App {
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 #endif
 	
-	@State var preferenceService: PreferenceService
-	@State var permissionService: PermissionService
-	@State var beaconBroadcastService: BeaconBroadcastService
+	@State var preferenceService = PreferenceService()
 	
-	init() {
-		let permissionService = PermissionService()
-		
-		self._preferenceService = State(initialValue: PreferenceService())
-		self._permissionService = State(initialValue: permissionService)
-		self._beaconBroadcastService = State(initialValue: BeaconBroadcastService(permissionService: permissionService))
-	}
+	@State var locationPermissionManager = LocationPermissionManager()
+	@State var bluetoothPermissionManager = BluetoothPermissionManager()
+	@State var notificationPermissionManager = NotificationPermissionManager()
+	
+	@State var beaconBroadcastService = BeaconBroadcastService()
+	@State var beaconDiscoveryService = BeaconDiscoveryService()
 	
 	var body: some Scene {
 		WindowGroup {
 			ContentView(
 				preferenceService: preferenceService,
-				permissionService: permissionService,
+				locationPermissionManager: locationPermissionManager,
+				bluetoothPermissionManager: bluetoothPermissionManager,
+				notificationPermissionManager: notificationPermissionManager,
 				beaconBroadcastService: beaconBroadcastService,
+				beaconDiscoveryService: beaconDiscoveryService,
 				backgroundMonitorService: BackgroundMonitorService.shared
 			)
 			.modelContainer(for: [BroadcastProject.self, BroadcastBeacon.self])

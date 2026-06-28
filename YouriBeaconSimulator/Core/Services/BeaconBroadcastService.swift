@@ -11,20 +11,23 @@ import CoreLocation
 import Observation
 
 @Observable
-class BeaconBroadcastService {
-	private let permissionService: PermissionService
-	
+class BeaconBroadcastService: NSObject, CBPeripheralManagerDelegate {
+	private var peripheralManager: CBPeripheralManager?
 	private(set) var activeBeacon: BroadcastBeacon?
 	
-	init(permissionService: PermissionService) {
-		self.permissionService = permissionService
-		
-		setupBluetoothStateListener()
+	override init() {
+		super.init()
+	}
+	
+	func prepareHardware() {
+		if peripheralManager == nil {
+			peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
+		}
 	}
 	
 	func startBroadcasting(beacon: BroadcastBeacon, txPower: Int8) {
-		guard let manager = permissionService.peripheralManager,
-			  manager.state == .poweredOn else { return }
+		prepareHardware()
+		guard let manager = peripheralManager, manager.state == .poweredOn else { return }
 		
 		guard let project = beacon.project,
 			  let uuid = UUID(uuidString: project.proximityUUID) else { return }
@@ -75,7 +78,7 @@ class BeaconBroadcastService {
 	}
 	
 	func stopBroadcasting() {
-		permissionService.peripheralManager?.stopAdvertising()
+		peripheralManager?.stopAdvertising()
 		activeBeacon = nil
 	}
 	
@@ -86,19 +89,10 @@ class BeaconBroadcastService {
 		startBroadcasting(beacon: currentBeacon, txPower: newPower)
 	}
 	
-	private func setupBluetoothStateListener() {
-		NotificationCenter.default.addObserver(
-			forName: .bluetoothStateChanged,
-			object: nil,
-			queue: .main
-		) { [weak self] notification in
-			guard let self = self,
-				  let state = notification.object as? CBManagerState else { return }
-			
-			if state == .poweredOff || state == .unauthorized || state == .unsupported {
-				if self.activeBeacon != nil {
-					self.stopBroadcasting()
-				}
+	nonisolated func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+		Task { @MainActor in
+			if peripheral.state != .poweredOn && self.activeBeacon != nil {
+				self.stopBroadcasting()
 			}
 		}
 	}

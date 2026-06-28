@@ -18,42 +18,37 @@ import UIKit
 class DiscoverViewModel {
 	private var modelContext: ModelContext
 	private var preferenceService: PreferenceService
-	private var permissionService: PermissionService
+	
+	private var locationPermissionManager: LocationPermissionManager
+	private var bluetoothPermissionManager: BluetoothPermissionManager
+	private var notificationPermissionManager: NotificationPermissionManager
+	
 	private var discoveryService: BeaconDiscoveryService
 	private var backgroundMonitorService: BackgroundMonitorService
-	
 	private var previewBeacons: [DiscoveredBeacon]?
 	
 	private(set) var projects: [BroadcastProject] = []
+	
 	var discoveredBeacons: [DiscoveredBeacon] {
 		previewBeacons ?? discoveryService.discoveredBeacons
 	}
 	var targetBeacons: [DiscoveredBeacon] {
-		let target = UUID(uuidString: proximityUUID)
+		guard let target = UUID(uuidString: proximityUUID) else { return [] }
 		return discoveredBeacons.filter { $0.uuid == target }
 	}
 	var otherBeacons: [DiscoveredBeacon] {
-		let target = UUID(uuidString: proximityUUID)
+		guard let target = UUID(uuidString: proximityUUID) else { return [] }
 		return discoveredBeacons.filter { $0.uuid != target }
 	}
 	
-	var bluetoothAuthorization: CBManagerAuthorization {
-		permissionService.bluetoothAuthorization
-	}
-	var bluetoothState: CBManagerState {
-		permissionService.bluetoothState
-	}
-	var locationAuthorization: CLAuthorizationStatus {
-		permissionService.locationAuthorization
-	}
+	var bluetoothAuthorization: CBManagerAuthorization { bluetoothPermissionManager.authorization }
+	var bluetoothState: CBManagerState { bluetoothPermissionManager.state }
+	var locationAuthorization: CLAuthorizationStatus { locationPermissionManager.authorizationStatus }
+	var notificationAuthorization: UNAuthorizationStatus { notificationPermissionManager.authorizationStatus }
 	
 	var isDiscovering: Bool = false
 	var selectedBeaconID: String? = nil
-	
-	var selectedBeacon: DiscoveredBeacon? {
-		discoveredBeacons.first(where: { $0.id == selectedBeaconID })
-	}
-	
+	var selectedBeacon: DiscoveredBeacon? { discoveredBeacons.first(where: { $0.id == selectedBeaconID }) }
 	var selectedProject: BroadcastProject? = nil
 	var proximityUUID: String = ""
 	
@@ -70,22 +65,18 @@ class DiscoverViewModel {
 	}
 	
 	var isBackgroundReady: Bool {
-		permissionService.locationAuthorization == .authorizedAlways &&
-		(permissionService.notificationAuthorization == .authorized || permissionService.notificationAuthorization == .provisional)
+		locationAuthorization == .authorizedAlways &&
+		(notificationAuthorization == .authorized || notificationAuthorization == .provisional)
 	}
 	
 #if os(iOS)
 	var hasDeniedBackgroundPermissions: Bool {
-		if permissionService.locationAuthorization == .denied ||
-			permissionService.locationAuthorization == .restricted ||
-			permissionService.notificationAuthorization == .denied {
+		if locationAuthorization == .denied || locationAuthorization == .restricted || notificationAuthorization == .denied {
 			return true
 		}
-		
-		if preferenceService.hasRequestedAlwaysLocation && permissionService.locationAuthorization == .authorizedWhenInUse {
+		if preferenceService.hasRequestedAlwaysLocation && locationAuthorization == .authorizedWhenInUse {
 			return true
 		}
-		
 		return false
 	}
 #endif
@@ -93,14 +84,18 @@ class DiscoverViewModel {
 	init(
 		modelContext: ModelContext,
 		preferenceService: PreferenceService,
-		permissionService: PermissionService,
+		locationPermissionManager: LocationPermissionManager,
+		bluetoothPermissionManager: BluetoothPermissionManager,
+		notificationPermissionManager: NotificationPermissionManager,
 		discoveryService: BeaconDiscoveryService,
 		backgroundMonitorService: BackgroundMonitorService,
 		previewBeacons: [DiscoveredBeacon]? = nil
 	) {
 		self.modelContext = modelContext
 		self.preferenceService = preferenceService
-		self.permissionService = permissionService
+		self.locationPermissionManager = locationPermissionManager
+		self.bluetoothPermissionManager = bluetoothPermissionManager
+		self.notificationPermissionManager = notificationPermissionManager
 		self.discoveryService = discoveryService
 		self.backgroundMonitorService = backgroundMonitorService
 		self.previewBeacons = previewBeacons
@@ -127,60 +122,57 @@ class DiscoverViewModel {
 	}
 	
 	func requestLocationPermission() {
-		Task {
-			await permissionService.requestLocationPermission()
-		}
+		Task { _ = await locationPermissionManager.requestWhenInUse() }
 	}
 	
 	func requestBluetoothPermission() {
-		Task {
-			await permissionService.requestBluetoothPermission()
-		}
+		Task { _ = await bluetoothPermissionManager.requestPermission() }
 	}
 	
 #if os(iOS)
 	func requestBackgroundPermissions() {
 		Task {
-			if permissionService.locationAuthorization == .notDetermined {
-				let _ = await permissionService.requestLocationPermission()
+			if locationAuthorization == .notDetermined {
+				_ = await locationPermissionManager.requestWhenInUse()
 			}
 			
-			if permissionService.locationAuthorization == .authorizedWhenInUse {
+			if locationAuthorization == .authorizedWhenInUse {
 				preferenceService.hasRequestedAlwaysLocation = true
-				permissionService.requestAlwaysLocationPermission()
+				_ = await locationPermissionManager.requestAlways()
 			}
 			
-			if permissionService.notificationAuthorization == .notDetermined {
-				await permissionService.requestNotificationPermission()
+			if notificationAuthorization == .notDetermined {
+				_ = await notificationPermissionManager.requestPermission()
 			}
 		}
 	}
 #endif
 	
 	func startDiscovery() {
-		if let uuid = UUID(uuidString: proximityUUID) {
+		guard let uuid = UUID(uuidString: proximityUUID) else { return }
+		
+		Task {
+#if os(macOS)
+			var auth = bluetoothPermissionManager.authorization
+			if auth == .notDetermined { auth = await bluetoothPermissionManager.requestPermission() }
+			guard auth == .allowedAlways, bluetoothPermissionManager.state == .poweredOn else { return }
+#else
+			var auth = locationPermissionManager.authorizationStatus
+			if auth == .notDetermined { auth = await locationPermissionManager.requestWhenInUse() }
+			guard auth == .authorizedWhenInUse || auth == .authorizedAlways else { return }
+#endif
+			
 			preferenceService.selectedUUID = uuid
 			isDiscovering = true
 			
-			// For Preview Only
 			if let previewBeacons {
-				self.discoveryService.discoveredBeacons = previewBeacons.map { mockBeacon in
-					DiscoveredBeacon(
-						uuid: uuid,
-						major: mockBeacon.major,
-						minor: mockBeacon.minor,
-						rssi: mockBeacon.rssi,
-						accuracy: mockBeacon.accuracy,
-						proximity: mockBeacon.proximity,
-						lastSeen: mockBeacon.lastSeen
-					)
+				self.previewBeacons = previewBeacons.map { mockBeacon in
+					DiscoveredBeacon(uuid: uuid, major: mockBeacon.major, minor: mockBeacon.minor, rssi: mockBeacon.rssi, accuracy: mockBeacon.accuracy, proximity: mockBeacon.proximity, lastSeen: mockBeacon.lastSeen)
 				}
 				return
 			}
 			
 #if os(iOS)
-			// Catch edge case: Ensure background tracking is registered
-			// if the user types a new UUID but the toggle was already on.
 			if isBackgroundEnabled {
 				backgroundMonitorService.updateMonitoring(for: uuid, isEnabled: true)
 			}
@@ -188,7 +180,6 @@ class DiscoverViewModel {
 			
 			discoveryService.startDiscovery(uuid: uuid) {
 #if os(iOS)
-				// Trigger light haptic on new discovery on iOS
 				Task { @MainActor in
 					let generator = UIImpactFeedbackGenerator(style: .light)
 					generator.prepare()

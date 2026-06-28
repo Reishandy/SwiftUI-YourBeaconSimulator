@@ -12,24 +12,10 @@ import CoreBluetooth
 @Observable
 class BroadcastViewModel {
 	private var modelContext: ModelContext
-	private var permissionService: PermissionService
+	private var bluetoothManager: BluetoothPermissionManager
 	private var broadcastService: BeaconBroadcastService
 	
 	private(set) var projects: [BroadcastProject] = []
-	
-	var bluetoothAuthorization: CBManagerAuthorization {
-		permissionService.bluetoothAuthorization
-	}
-	var bluetoothState: CBManagerState {
-		permissionService.bluetoothState
-	}
-	
-	var currentBroadcastingBeacon: BroadcastBeacon? {
-		broadcastService.activeBeacon
-	}
-	var selectedBeacon: BroadcastBeacon?
-	
-	var searchTerm: String = ""
 	var filteredProjectGroups: [BroadcastProjectGroup] {
 		if searchTerm.isEmpty {
 			return projects.map { BroadcastProjectGroup(project: $0, beacons: $0.sortedBeacons) }
@@ -51,6 +37,14 @@ class BroadcastViewModel {
 		}
 	}
 	
+	var bluetoothAuthorization: CBManagerAuthorization { bluetoothManager.authorization }
+	var bluetoothState: CBManagerState { bluetoothManager.state }
+	var currentBroadcastingBeacon: BroadcastBeacon? { broadcastService.activeBeacon }
+	
+	// TODO: Tidy this up
+	var selectedBeacon: BroadcastBeacon?
+	var searchTerm: String = ""
+	
 	var isAddSheetPresented: Bool = false
 	var isEditSheetPresented: Bool = false
 	var isDeleteConfirmmationPresented: Bool = false
@@ -64,11 +58,11 @@ class BroadcastViewModel {
 	
 	init(
 		modelContext: ModelContext,
-		permissionService: PermissionService,
+		bluetoothManager: BluetoothPermissionManager,
 		broadcastService: BeaconBroadcastService
 	) {
 		self.modelContext = modelContext
-		self.permissionService = permissionService
+		self.bluetoothManager = bluetoothManager
 		self.broadcastService = broadcastService
 		
 		self.fetchData()
@@ -86,8 +80,32 @@ class BroadcastViewModel {
 	
 	func requestBluetoothPermission() {
 		Task {
-			await permissionService.requestBluetoothPermission()
+			_ = await bluetoothManager.requestPermission()
 		}
+	}
+	
+	func broadcast(_ beacon: BroadcastBeacon, defaultTxPower: Int8 = -59) {
+		Task {
+			var auth = bluetoothManager.authorization
+			if auth == .notDetermined {
+				auth = await bluetoothManager.requestPermission()
+			}
+			
+			guard auth == .allowedAlways, bluetoothManager.state == .poweredOn else {
+				return
+			}
+			
+			if currentBroadcastingBeacon == beacon {
+				broadcastService.stopBroadcasting()
+			} else {
+				broadcastService.stopBroadcasting()
+				broadcastService.startBroadcasting(beacon: beacon, txPower: defaultTxPower)
+			}
+		}
+	}
+	
+	func updateTxPower(to newTxPower: Int8) {
+		broadcastService.updateTxPower(to: newTxPower)
 	}
 	
 	func addBeacon() {
@@ -179,18 +197,5 @@ class BroadcastViewModel {
 			fetchData()
 			selectedBeacon = nil
 		}
-	}
-	
-	func broadcast(_ beacon: BroadcastBeacon, defaultTxPower: Int8 = -59) {
-		if currentBroadcastingBeacon == beacon {
-			broadcastService.stopBroadcasting()
-		} else {
-			broadcastService.stopBroadcasting()
-			broadcastService.startBroadcasting(beacon: beacon, txPower: defaultTxPower)
-		}
-	}
-	
-	func updateTxPower(to newTxPower: Int8) {
-		broadcastService.updateTxPower(to: newTxPower)
 	}
 }

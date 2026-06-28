@@ -12,30 +12,40 @@ struct ContentView: View {
 	@Environment(\.modelContext) private var modelContext
 	
 	var isPreview: Bool = false
+	
 	let preferenceService: PreferenceService
-	let permissionService: PermissionService
+	let locationPermissionManager: LocationPermissionManager
+	let bluetoothPermissionManager: BluetoothPermissionManager
+	let notificationPermissionManager: NotificationPermissionManager
+	
 	let beaconBroadcastService: BeaconBroadcastService
+	let beaconDiscoveryService: BeaconDiscoveryService
 	let backgroundMonitorService: BackgroundMonitorService
 	
 	var body: some View {
 		TabView {
-			BroadcastView(broadcastViewModel: BroadcastViewModel(
-				modelContext: modelContext,
-				permissionService: permissionService,
-				broadcastService: beaconBroadcastService
-			))
+			BroadcastView(
+				broadcastViewModel: BroadcastViewModel(
+					modelContext: modelContext,
+					bluetoothManager: bluetoothPermissionManager,
+					broadcastService: beaconBroadcastService
+				)
+			)
 			.tabItem {
 				Label("Broadcast", systemImage: "sensor.radiowaves.left.and.right.fill")
 			}
 			
-			DiscoverView(discoverViewModel: DiscoverViewModel(
-				modelContext: modelContext,
-				preferenceService: preferenceService,
-				permissionService: permissionService,
-				discoveryService: BeaconDiscoveryService(permissionService: permissionService),
-				backgroundMonitorService: backgroundMonitorService,
-				previewBeacons: isPreview ? PreviewContainer.discoveredBeaconPreviews : nil
-			))
+			DiscoverView(
+				discoverViewModel: DiscoverViewModel(
+					modelContext: modelContext,
+					preferenceService: preferenceService,
+					locationPermissionManager: locationPermissionManager,
+					bluetoothPermissionManager: bluetoothPermissionManager,
+					notificationPermissionManager: notificationPermissionManager,
+					discoveryService: beaconDiscoveryService,
+					backgroundMonitorService: backgroundMonitorService
+				)
+			)
 			.tabItem {
 				Label("Discover", systemImage: "dot.radiowaves.up.forward")
 			}
@@ -44,13 +54,14 @@ struct ContentView: View {
 }
 
 #Preview {
-	let permissionService = PermissionService()
-	
 	ContentView(
 		isPreview: true,
 		preferenceService: PreferenceService(),
-		permissionService: permissionService,
-		beaconBroadcastService: BeaconBroadcastService(permissionService: permissionService),
+		locationPermissionManager: LocationPermissionManager(),
+		bluetoothPermissionManager: BluetoothPermissionManager(),
+		notificationPermissionManager: NotificationPermissionManager(),
+		beaconBroadcastService: BeaconBroadcastService(),
+		beaconDiscoveryService: BeaconDiscoveryService(),
 		backgroundMonitorService: BackgroundMonitorService.shared
 	)
 	.modelContainer(PreviewContainer.shared)

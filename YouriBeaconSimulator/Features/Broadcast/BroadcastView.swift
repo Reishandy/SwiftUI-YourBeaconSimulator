@@ -218,7 +218,11 @@ struct BroadcastView: View {
 }
 
 #Preview {
-	let permissionService = PermissionService()
-	
-	BroadcastView(broadcastViewModel: BroadcastViewModel(modelContext: PreviewContainer.shared.mainContext, permissionService: permissionService, broadcastService: BeaconBroadcastService(permissionService: permissionService)))
+	BroadcastView(
+		broadcastViewModel: BroadcastViewModel(
+			modelContext: PreviewContainer.shared.mainContext,
+			bluetoothManager: BluetoothPermissionManager(),
+			broadcastService: BeaconBroadcastService()
+		)
+	)
 }

@@ -196,14 +196,15 @@ struct DiscoverView: View {
 }
 
 #Preview {
-	let permissionService = PermissionService()
-	
-	DiscoverView(discoverViewModel: DiscoverViewModel(
-		modelContext: PreviewContainer.shared.mainContext,
-		preferenceService: PreferenceService(),
-		permissionService: permissionService,
-		discoveryService: BeaconDiscoveryService(permissionService: permissionService),
-		backgroundMonitorService: BackgroundMonitorService.shared,
-		previewBeacons: PreviewContainer.discoveredBeaconPreviews
-	))
+	DiscoverView(
+		discoverViewModel: DiscoverViewModel(
+			modelContext: PreviewContainer.shared.mainContext,
+			preferenceService: PreferenceService(),
+			locationPermissionManager: LocationPermissionManager(),
+			bluetoothPermissionManager: BluetoothPermissionManager(),
+			notificationPermissionManager: NotificationPermissionManager(),
+			discoveryService: BeaconDiscoveryService(),
+			backgroundMonitorService: BackgroundMonitorService.shared
+		)
+	)
 }
