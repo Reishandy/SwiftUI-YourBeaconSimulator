@@ -43,7 +43,8 @@ struct ContentView: View {
 					bluetoothPermissionManager: bluetoothPermissionManager,
 					notificationPermissionManager: notificationPermissionManager,
 					discoveryService: beaconDiscoveryService,
-					backgroundMonitorService: backgroundMonitorService
+					backgroundMonitorService: backgroundMonitorService,
+					previewBeacons: isPreview ? PreviewContainer.discoveredBeaconPreviews : nil
 				)
 			)
 			.tabItem {
