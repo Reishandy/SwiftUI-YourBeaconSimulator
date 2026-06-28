@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="images/icon.png" alt="Your iBeacon Simulator Logo" width="120">
+  <img src="images/appicon.png" alt="Your iBeacon Simulator Logo" width="120">
 
   # Your iBeacon Simulator
 
