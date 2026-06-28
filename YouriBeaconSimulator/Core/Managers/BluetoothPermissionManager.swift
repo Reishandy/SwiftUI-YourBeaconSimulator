@@ -17,6 +17,15 @@ public final class BluetoothPermissionManager: NSObject, CBPeripheralManagerDele
 	private var dummyManager: CBPeripheralManager?
 	private var authContinuation: CheckedContinuation<CBManagerAuthorization, Never>?
 	
+	public override init() {
+		super.init()
+		if CBPeripheralManager.authorization != .notDetermined {
+			self.dummyManager = CBPeripheralManager(delegate: self, queue: nil, options: [
+				CBPeripheralManagerOptionShowPowerAlertKey: false
+			])
+		}
+	}
+	
 	public func requestPermission() async -> CBManagerAuthorization {
 		guard authorization == .notDetermined else { return authorization }
 		

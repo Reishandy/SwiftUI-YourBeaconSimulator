@@ -13,7 +13,9 @@ import Observation
 @Observable
 class BeaconBroadcastService: NSObject, CBPeripheralManagerDelegate {
 	private var peripheralManager: CBPeripheralManager?
+	
 	private(set) var activeBeacon: BroadcastBeacon?
+	private var pendingTxPower: Int8?
 	
 	override init() {
 		super.init()
@@ -25,74 +27,70 @@ class BeaconBroadcastService: NSObject, CBPeripheralManagerDelegate {
 		}
 	}
 	
-	func startBroadcasting(beacon: BroadcastBeacon, txPower: Int8) {
-		prepareHardware()
-		guard let manager = peripheralManager, manager.state == .poweredOn else { return }
+	func startBroadcasting(beacon: BroadcastBeacon, txPower: Int8) {self.activeBeacon = beacon
+		self.pendingTxPower = txPower
 		
-		guard let project = beacon.project,
-			  let uuid = UUID(uuidString: project.proximityUUID) else { return }
+		if peripheralManager == nil {
+			peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
+		}
+		
+		if peripheralManager?.state == .poweredOn {
+			executeBroadcast()
+		}
+	}
+	
+	private func executeBroadcast() {
+		guard let manager = peripheralManager, manager.state == .poweredOn,
+			  let beacon = activeBeacon, let txPower = pendingTxPower,
+			  let project = beacon.project, let uuid = UUID(uuidString: project.proximityUUID) else { return }
 		
 		let major = UInt16(clamping: beacon.majorID)
 		let minor = UInt16(clamping: beacon.minorID)
-		
 		let beaconPeripheralData: [String: Any]
 		
 #if os(macOS)
-		// Mnually build the 21-byte iBeacon payload for MacOS
 		var advertisementBytes = [UInt8](repeating: 0, count: 21)
-		
-		// UUID bytes (16 bytes)
 		let uuidBytes = withUnsafeBytes(of: uuid.uuid) { Array($0) }
-		for i in 0..<16 {
-			advertisementBytes[i] = uuidBytes[i]
-		}
+		for i in 0..<16 { advertisementBytes[i] = uuidBytes[i] }
 		
-		// Major (2 bytes, Big Endian)
 		advertisementBytes[16] = UInt8(major >> 8)
 		advertisementBytes[17] = UInt8(major & 0x00FF)
-		
-		// Minor (2 bytes, Big Endian)
 		advertisementBytes[18] = UInt8(minor >> 8)
 		advertisementBytes[19] = UInt8(minor & 0x00FF)
-		
-		// Tx Power (1 byte)
 		advertisementBytes[20] = UInt8(bitPattern: txPower)
 		
-		// Use Apple's undocumented CoreBluetooth key for iBeacons
 		beaconPeripheralData = ["kCBAdvDataAppleBeaconKey": Data(advertisementBytes)]
-		
 #else
-		let beaconRegion = CLBeaconRegion(
-			uuid: uuid,
-			major: major,
-			minor: minor,
-			identifier: beacon.beaconName
-		)
-		
+		let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: beacon.beaconName)
 		guard let data = beaconRegion.peripheralData(withMeasuredPower: NSNumber(value: txPower)) as? [String: Any] else { return }
 		beaconPeripheralData = data
 #endif
 		
-		self.activeBeacon = beacon
 		manager.startAdvertising(beaconPeripheralData)
 	}
 	
 	func stopBroadcasting() {
 		peripheralManager?.stopAdvertising()
 		activeBeacon = nil
+		pendingTxPower = nil
 	}
 	
 	func updateTxPower(to newPower: Int8) {
 		guard let currentBeacon = activeBeacon else { return }
-		
 		stopBroadcasting()
 		startBroadcasting(beacon: currentBeacon, txPower: newPower)
 	}
 	
 	nonisolated func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
 		Task { @MainActor in
-			if peripheral.state != .poweredOn && self.activeBeacon != nil {
-				self.stopBroadcasting()
+			if peripheral.state == .poweredOn {
+				if self.activeBeacon != nil {
+					self.executeBroadcast()
+				}
+			} else {
+				if self.activeBeacon != nil {
+					self.stopBroadcasting()
+				}
 			}
 		}
 	}

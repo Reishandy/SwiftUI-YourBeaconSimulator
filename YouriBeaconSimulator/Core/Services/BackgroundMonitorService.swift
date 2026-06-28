@@ -61,7 +61,7 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 		let constraint = CLBeaconIdentityConstraint(uuid: beaconRegion.uuid)
 		manager.startRangingBeacons(satisfying: constraint)
 		
-		DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+		DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
 			manager.stopRangingBeacons(satisfying: constraint)
 		}
 	}

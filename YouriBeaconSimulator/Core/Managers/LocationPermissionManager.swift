@@ -32,9 +32,14 @@ public final class LocationPermissionManager: NSObject, CLLocationManagerDelegat
 	}
 	
 	public func requestAlways() async -> CLAuthorizationStatus {
+#if os(macOS)
+		// We don't really use location in macOS at all
+		guard authorizationStatus == .notDetermined else { return authorizationStatus }
+#else
 		guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .notDetermined else {
 			return authorizationStatus
 		}
+#endif
 		
 		return await withCheckedContinuation { continuation in
 			self.authContinuation = continuation
