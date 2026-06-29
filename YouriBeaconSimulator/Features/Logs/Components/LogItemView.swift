@@ -30,6 +30,9 @@ struct LogItemView: View {
 					.lineLimit(nil)
 					.fixedSize(horizontal: false, vertical: true)
 			}
+			.alignmentGuide(.listRowSeparatorLeading) { dimensions in
+				dimensions[.leading]
+			}
 			
 			Spacer(minLength: 8)
 			
