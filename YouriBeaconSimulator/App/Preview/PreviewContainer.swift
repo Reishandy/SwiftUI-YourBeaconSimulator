@@ -88,7 +88,7 @@ class PreviewContainer {
 			s3_e1.timestamp = s3.startTime.addingTimeInterval(1)
 			let s3_e2 = LogEvent(message: "Started broadcasting\n'Main Entrance' (Major: 2, Minor: 100)\nat -59 dBm.", category: .broadcast)
 			s3_e2.timestamp = s3.startTime.addingTimeInterval(45)
-			let s3_e3 = LogEvent(message: "Updated TX Power for 'Main Entrance'\nto -65 dBm", category: .broadcast)
+			let s3_e3 = LogEvent(message: "Updated TX Power for\n'Main Entrance'\ninto -65 dBm", category: .broadcast)
 			s3_e3.timestamp = s3.startTime.addingTimeInterval(600)
 			let s3_e4 = LogEvent(message: "Stopped broadcasting\n'Main Entrance'", category: .broadcast)
 			s3_e4.timestamp = s3.startTime.addingTimeInterval(1800)
@@ -103,9 +103,9 @@ class PreviewContainer {
 			s4_e2.timestamp = s4.startTime.addingTimeInterval(15)
 			let s4_e3 = LogEvent(message: "Discovered new beacon!\nMajor: 1\nMinor: 100\nDistance: 0.80m\nRSSI: -42 dBm", category: .discovery)
 			s4_e3.timestamp = s4.startTime.addingTimeInterval(17)
-			let s4_e4 = LogEvent(message: "Beacon (Major: 1, Minor: 100) went out of range (stale).", category: .discovery)
+			let s4_e4 = LogEvent(message: "Beacon (Major: 1, Minor: 100)\nwent out of range (stale).", category: .discovery)
 			s4_e4.timestamp = s4.startTime.addingTimeInterval(45)
-			let s4_e5 = LogEvent(message: "Beacon (Major: 1, Minor: 100) is back in range.", category: .discovery)
+			let s4_e5 = LogEvent(message: "Beacon (Major: 1, Minor: 100)\nis back in range.", category: .discovery)
 			s4_e5.timestamp = s4.startTime.addingTimeInterval(75)
 			
 			[s4_e1, s4_e2, s4_e3, s4_e4, s4_e5].forEach { $0.session = s4 }
