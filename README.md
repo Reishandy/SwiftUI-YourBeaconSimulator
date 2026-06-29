@@ -32,8 +32,8 @@ Your iBeacon Simulator eliminates the need for physical beacon hardware when tes
 ### macOS Previews
 
 <div align="center">
-  <img src="images/mac-1.png" width="45%" alt="macOS Broadcast">
-  <img src="images/mac-2.png" width="45%" alt="macOS Discovery">
+  <img src="images/macos-1.png" width="45%" alt="macOS Broadcast">
+  <img src="images/macos-2.png" width="45%" alt="macOS Discovery">
 </div>
 
 ## Key Features
