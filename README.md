@@ -56,6 +56,12 @@ Your iBeacon Simulator eliminates the need for physical beacon hardware when tes
 * **Background Ranging:** Temporarily wakes the app upon region entry to pinpoint the exact beacon (Major/Minor) that triggered the event.
 * **Rich Notifications:** Delivers detailed local alerts on entry (e.g., "Found 2 beacons nearby") and exit, along with haptic feedback for foreground discoveries.
 
+### Session-Based Live Logging
+* **Real-Time Event Stream:** Track background region changes, active scanning state shifts, and beacon discoveries in an organized chronological ledger.
+* **Granular Beacon Metrics:** View immediate snapshot data upon discovery, including UUID targets, Major/Minor IDs, real-time RSSI fluctuations, and exact calculated distances.
+* **State Lifecycle Tracking:** Visually audit when a beacon transitions out of range (`stale`) and exactly when it is re-discovered.
+* **Ephemeral Memory Footprint:** Built as session-isolated logs with quick-clear capabilities to keep your debugging environment lightweight and private.
+
 ## Technical Architecture
 
 This project was built to explore the boundaries of Apple's cross-platform frameworks and Bluetooth stacks. 
