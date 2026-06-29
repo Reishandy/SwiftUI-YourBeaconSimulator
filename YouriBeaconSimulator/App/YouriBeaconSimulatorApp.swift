@@ -16,14 +16,43 @@ struct YouriBeaconSimulatorApp: App {
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 #endif
 	
-	@State var preferenceService = PreferenceService()
+	let container: ModelContainer
+	let loggingService: LoggingService
 	
+	@State var preferenceService = PreferenceService()
 	@State var locationPermissionManager = LocationPermissionManager()
 	@State var bluetoothPermissionManager = BluetoothPermissionManager()
 	@State var notificationPermissionManager = NotificationPermissionManager()
 	
 	@State var beaconBroadcastService = BeaconBroadcastService()
 	@State var beaconDiscoveryService = BeaconDiscoveryService()
+	
+	var deviceDescription: String {
+#if os(iOS)
+		return "\(UIDevice.current.name) (\(UIDevice.current.systemName) \(UIDevice.current.systemVersion))"
+#elseif os(macOS)
+		return Host.current().localizedName ?? "Mac"
+#else
+		return "Unknown Device"
+#endif
+	}
+	
+	init() {
+		do {
+			let schema = Schema([
+				BroadcastProject.self,
+				BroadcastBeacon.self,
+				LogSession.self,
+				LogEvent.self
+			])
+			
+			container = try ModelContainer(for: schema)
+			
+			loggingService = LoggingService(modelContainer: container)
+		} catch {
+			fatalError("Failed to initialize SwiftData container: \(error)")
+		}
+	}
 	
 	var body: some Scene {
 		WindowGroup {
@@ -36,11 +65,19 @@ struct YouriBeaconSimulatorApp: App {
 				beaconDiscoveryService: beaconDiscoveryService,
 				backgroundMonitorService: BackgroundMonitorService.shared
 			)
-			.modelContainer(for: [BroadcastProject.self, BroadcastBeacon.self])
+			.modelContainer(container)
 #if os(macOS)
 			.frame(minWidth: 700)
 			.frame(maxWidth: 1000)
 #endif
+			.task {
+				beaconBroadcastService.setLogger(loggingService)
+				beaconDiscoveryService.setLogger(loggingService)
+				BackgroundMonitorService.shared.setLogger(loggingService)
+				
+				await loggingService.startNewSession()
+				await loggingService.log(message: "App Session Started on \(deviceDescription)", category: .system)
+			}
 		}
 #if os(macOS)
 		.windowResizability(.contentSize)

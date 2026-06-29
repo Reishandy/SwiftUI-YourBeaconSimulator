@@ -50,6 +50,15 @@ struct ContentView: View {
 			.tabItem {
 				Label("Discover", systemImage: "dot.radiowaves.up.forward")
 			}
+			
+			LogView(
+				logViewModel: LogViewModel(
+					modelContext: modelContext
+				)
+			)
+			.tabItem {
+				Label("Logs", systemImage: "text.document.fill")
+			}
 		}
 	}
 }

@@ -12,6 +12,7 @@ import Observation
 @Observable
 class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 	static let shared = BackgroundMonitorService()
+	private var logger: LoggingService?
 	
 #if os(iOS)
 	private let locationManager = CLLocationManager()
@@ -24,6 +25,10 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 		locationManager.delegate = self
 		locationManager.allowsBackgroundLocationUpdates = true
 #endif
+	}
+	
+	func setLogger(_ logger: LoggingService) {
+		self.logger = logger
 	}
 	
 	func bootstrap() {
@@ -53,6 +58,8 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 	func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
 		guard let beaconRegion = region as? CLBeaconRegion else { return }
 		
+		Task { await logger?.log(message: "Entered background region for UUID: \(beaconRegion.uuid.uuidString)", category: .background) }
+		
 		NotificationUtilities.send(
 			title: "Beacon Region Entered",
 			body: "You entered the region for \(beaconRegion.uuid.uuidString)."
@@ -69,6 +76,8 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 	func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
 		guard let beaconRegion = region as? CLBeaconRegion else { return }
 		
+		Task { await logger?.log(message: "Exited background region for UUID: \(beaconRegion.uuid.uuidString)", category: .background) }
+		
 		NotificationUtilities.send(
 			title: "Beacon Lost",
 			body: "You left the range of \(beaconRegion.uuid.uuidString)"
@@ -83,11 +92,20 @@ class BackgroundMonitorService: NSObject, CLLocationManagerDelegate {
 		
 		var uniqueBeacons: [CLBeacon] = []
 		var seenIds: Set<String> = []
+		
 		for beacon in beacons {
 			let id = "\(beacon.major)-\(beacon.minor)"
 			if !seenIds.contains(id) {
 				seenIds.insert(id)
 				uniqueBeacons.append(beacon)
+				
+				let distance = beacon.accuracy < 0 ? "Unknown" : String(format: "%.2fm", beacon.accuracy)
+				Task {
+					await logger?.log(
+						message: "Background Ranged!\nMajor: \(beacon.major)\nMinor: \(beacon.minor)\nDistance: \(distance)\nRSSI: \(beacon.rssi) dBm",
+						category: .background
+					)
+				}
 			}
 		}
 		

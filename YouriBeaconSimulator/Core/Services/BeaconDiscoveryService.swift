@@ -19,14 +19,19 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 	private var onNewBeaconFound: (() -> Void)?
 	private var refreshTask: Task<Void, Never>?
 	
+	private var logger: LoggingService?
+	
 	init() {
 #if os(macOS)
 		self.discoverer = MacOSBeaconDiscoverer()
 #else
 		self.discoverer = IOSBeaconDiscoverer()
 #endif
-		
 		self.discoverer.delegate = self
+	}
+	
+	func setLogger(_ logger: LoggingService) {
+		self.logger = logger
 	}
 	
 	func startDiscovery(uuid: UUID, onNewBeaconFound: @escaping () -> Void) {
@@ -34,6 +39,8 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 		self.isScanning = true
 		self.discoveredBeacons = []
 		self.onNewBeaconFound = onNewBeaconFound
+		
+		Task { await logger?.log(message: "Started scanning for UUID: \(uuid.uuidString)", category: .discovery) }
 		
 		discoverer.startDiscovery(uuid: uuid)
 		startRefreshTask()
@@ -44,6 +51,8 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 		self.onNewBeaconFound = nil
 		self.refreshTask?.cancel()
 		self.refreshTask = nil
+		
+		Task { await logger?.log(message: "Stopped scanning.", category: .discovery) }
 		
 		discoverer.stopDiscovery()
 	}
@@ -67,6 +76,10 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 						
 						updatedBeacons[i].isCurrentlyActive = false
 						hasChanges = true
+						
+						let major = updatedBeacons[i].major
+						let minor = updatedBeacons[i].minor
+						Task { await self.logger?.log(message: "Beacon (Major: \(major), Minor: \(minor)) went out of range (stale).", category: .discovery) }
 					}
 				}
 				
@@ -95,10 +108,17 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 		var hasNewBeacon = false
 		
 		if let index = updatedBeacons.firstIndex(where: { $0.id == incomingBeacon.id }) {
+			if !updatedBeacons[index].isCurrentlyActive {
+				Task { await logger?.log(message: "Beacon (Major: \(incomingBeacon.major), Minor: \(incomingBeacon.minor)) is back in range.", category: .discovery) }
+			}
+			
 			updatedBeacons[index] = incomingBeacon
 		} else {
 			updatedBeacons.append(incomingBeacon)
 			hasNewBeacon = true
+			
+			let distance = incomingBeacon.accuracy < 0 ? "Unknown" : String(format: "%.2fm", incomingBeacon.accuracy)
+			Task { await logger?.log(message: "Discovered new beacon!\nMajor: \(incomingBeacon.major)\nMinor: \(incomingBeacon.minor)\nDistance: \(distance)\nRSSI: \(incomingBeacon.rssi) dBm", category: .discovery) }
 		}
 		
 		self.sortDiscoveredBeacons(&updatedBeacons)
