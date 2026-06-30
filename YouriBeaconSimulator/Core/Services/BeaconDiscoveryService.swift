@@ -72,7 +72,7 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 				// Mark stale beacons as inactive
 				for i in 0..<updatedBeacons.count {
 					if updatedBeacons[i].isCurrentlyActive &&
-						now.timeIntervalSince(updatedBeacons[i].lastSeen) >= 1.0 {
+						now.timeIntervalSince(updatedBeacons[i].lastSeen) >= 3.0 {
 						
 						updatedBeacons[i].isCurrentlyActive = false
 						hasChanges = true

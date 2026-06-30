@@ -58,14 +58,13 @@ struct LogItemView: View {
 	
 	@ViewBuilder
 	private var buttonComplex: some View {
-		if event.category != .system {
-			Button() {
-				onEventDeleteClick()
-			} label: {
-				Label("Delete", systemImage: "trash")
-			}
-			.tint(.red)
+		Button() {
+			onEventDeleteClick()
+		} label: {
+			Label("Delete", systemImage: "trash")
 		}
+		.tint(event.category == .system ? .secondary : .red)
+		.disabled(event.category == .system)
 	}
 }
 

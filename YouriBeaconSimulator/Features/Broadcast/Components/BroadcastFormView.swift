@@ -19,6 +19,8 @@ struct BroadcastFormView: View {
 	
 	var availableProjects: [BroadcastProject]
 	
+	static let validBeaconIDRange: ClosedRange<Int> = 1...65535
+	
 	var body: some View {
 		Form {
 			Section() {
@@ -43,6 +45,15 @@ struct BroadcastFormView: View {
 				
 				HStack {
 					TextField("Proximity UUID", text: $proximityUUID)
+						.onChange(of: proximityUUID) { _, newValue in
+							if let matchedProject = availableProjects.first(where: { $0.proximityUUID.caseInsensitiveCompare(newValue) == .orderedSame }) {
+								if selectedProject != matchedProject {
+									selectedProject = matchedProject
+								}
+							} else if selectedProject != nil && selectedProject?.proximityUUID.caseInsensitiveCompare(newValue) != .orderedSame {
+								selectedProject = nil
+							}
+						}
 					
 					Button {
 						proximityUUID = UUID().uuidString
@@ -66,10 +77,7 @@ struct BroadcastFormView: View {
 					Text("Major:")
 #endif
 					
-					TextField("Major ID", text: Binding(
-						get: { majorID.map(String.init) ?? "" },
-						set: { majorID = Int($0) }
-					))
+					TextField("Major ID", text: sanitizedIDBinding(for: $majorID))
 #if os(iOS)
 					.keyboardType(.numberPad)
 #endif
@@ -77,13 +85,10 @@ struct BroadcastFormView: View {
 				
 				HStack {
 #if os(iOS)
-					Text("Major:")
+					Text("Minor:")
 #endif
 					
-					TextField("Minor ID", text: Binding(
-						get: { minorID.map(String.init) ?? "" },
-						set: { minorID = Int($0) }
-					))
+					TextField("Minor ID", text: sanitizedIDBinding(for: $minorID))
 #if os(iOS)
 					.keyboardType(.numberPad)
 #endif
@@ -93,6 +98,23 @@ struct BroadcastFormView: View {
 #if os(macOS)
 		.padding(.horizontal, 20)
 #endif
+	}
+	
+	private func sanitizedIDBinding(for value: Binding<Int?>) -> Binding<String> {
+		Binding<String>(
+			get: { value.wrappedValue.map(String.init) ?? "" },
+			set: { newValue in
+				let digitsOnly = newValue.filter(\.isNumber)
+				
+				guard !digitsOnly.isEmpty else {
+					value.wrappedValue = nil
+					return
+				}
+				
+				let parsed = Int(digitsOnly) ?? Int.max
+				value.wrappedValue = min(parsed, Self.validBeaconIDRange.upperBound)
+			}
+		)
 	}
 }
 

@@ -25,10 +25,11 @@ struct BroadcastAddSheetView: View {
 	@State private var isDismissConfirmationShown: Bool = false
 	
 	private var isFormFilled: Bool {
-		let isBeaconValid = !beaconName.trimmingCharacters(in: .whitespaces).isEmpty && majorID != nil && minorID != nil
+		let isMajorValid = majorID.map { BroadcastFormView.validBeaconIDRange.contains($0) } ?? false
+		let isMinorValid = minorID.map { BroadcastFormView.validBeaconIDRange.contains($0) } ?? false
+		let isBeaconValid = !beaconName.trimmingCharacters(in: .whitespaces).isEmpty && isMajorValid && isMinorValid
 		
 		let isUUIDValid = UUID(uuidString: proximityUUID) != nil
-		
 		let isProjectValid = !projectName.trimmingCharacters(in: .whitespaces).isEmpty && isUUIDValid
 		
 		return isBeaconValid && isProjectValid
@@ -54,7 +55,6 @@ struct BroadcastAddSheetView: View {
 				minorID: $minorID,
 				availableProjects: availableProjects
 			)
-			.navigationTitle("Add New Beacon")
 			.navigationTitle("Add New Beacon")
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)

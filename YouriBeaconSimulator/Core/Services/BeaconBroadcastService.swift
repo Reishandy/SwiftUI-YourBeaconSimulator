@@ -33,10 +33,11 @@ class BeaconBroadcastService: BeaconBroadcasterDelegate {
 	}
 	
 	func startBroadcasting(beacon: BroadcastBeacon, txPower: Int8, isChangePower: Bool = false) {
+		guard let project = beacon.project, let uuid = UUID(uuidString: project.proximityUUID) else { return }
+		
 		self.activeBeacon = beacon
 		self.pendingTxPower = txPower
 		
-		guard let project = beacon.project, let uuid = UUID(uuidString: project.proximityUUID) else { return }
 		let major = UInt16(clamping: beacon.majorID)
 		let minor = UInt16(clamping: beacon.minorID)
 		

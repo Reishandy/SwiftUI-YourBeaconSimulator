@@ -46,7 +46,10 @@ struct BroadcastEditSheetView: View {
 	}
 	
 	private var isFormFilled: Bool {
-		let isBeaconValid = !beaconName.trimmingCharacters(in: .whitespaces).isEmpty && majorID != nil && minorID != nil
+		let isMajorValid = majorID.map { BroadcastFormView.validBeaconIDRange.contains($0) } ?? false
+		let isMinorValid = minorID.map { BroadcastFormView.validBeaconIDRange.contains($0) } ?? false
+		let isBeaconValid = !beaconName.trimmingCharacters(in: .whitespaces).isEmpty && isMajorValid && isMinorValid
+		
 		let isUUIDValid = UUID(uuidString: proximityUUID) != nil
 		let isProjectValid = !projectName.trimmingCharacters(in: .whitespaces).isEmpty && isUUIDValid
 		

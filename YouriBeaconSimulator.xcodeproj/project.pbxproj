@@ -282,7 +282,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YouriBeaconSimulator/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Your iBeacon Simulator";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This app requires Bluetooth access to advertise and simulate outbound iBeacon signals.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "his app requires background location access to alert you when you enter or exit an iBeacon's range while the app is closed.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app requires location access to monitor, discover, and measure ranging distances to nearby iBeacons.";
@@ -346,7 +346,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YouriBeaconSimulator/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Your iBeacon Simulator";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This app requires Bluetooth access to advertise and simulate outbound iBeacon signals.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "his app requires background location access to alert you when you enter or exit an iBeacon's range while the app is closed.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app requires location access to monitor, discover, and measure ranging distances to nearby iBeacons.";

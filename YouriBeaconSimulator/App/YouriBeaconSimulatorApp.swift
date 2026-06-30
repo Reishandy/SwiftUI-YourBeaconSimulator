@@ -72,14 +72,7 @@ struct YouriBeaconSimulatorApp: App {
 			.frame(minWidth: 700)
 			.frame(maxWidth: 1000)
 #endif
-		}
-#if os(macOS)
-		.windowResizability(.contentSize)
-#endif
-		.onChange(of: scenePhase) { oldPhase, newPhase in
-			switch newPhase {
-			case .active:
-				// App launched or came back to the foreground
+			.task {
 				beaconBroadcastService.setLogger(loggingService)
 				beaconDiscoveryService.setLogger(loggingService)
 				BackgroundMonitorService.shared.setLogger(loggingService)
@@ -90,21 +83,14 @@ struct YouriBeaconSimulatorApp: App {
 						deviceIdentifier: deviceIdentifierService.getDeviceUUID()
 					)
 				}
-				
-			case .background:
-				// App was hidden, swiped to home, or is about to be terminated
+			}
+		}
+#if os(macOS)
+		.windowResizability(.contentSize)
+#endif
+		.onChange(of: scenePhase) { oldPhase, newPhase in
+			if newPhase == .background {
 				beaconBroadcastService.stopBroadcasting()
-				
-				Task {
-					await loggingService.endCurrentSession()
-				}
-				
-			case .inactive:
-				// App is transitioning (e.g., pulling down Control Center)
-				break
-				
-			@unknown default:
-				break
 			}
 		}
 	}
