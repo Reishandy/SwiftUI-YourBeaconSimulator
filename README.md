@@ -23,17 +23,17 @@ Your iBeacon Simulator eliminates the need for physical beacon hardware when tes
 ### iOS Previews
 
 <div align="center">
-  <img src="images/ios-1.PNG" width="22%" alt="iOS Broadcast">
-  <img src="images/ios-2.PNG" width="22%" alt="iOS Project Management">
-  <img src="images/ios-3.PNG" width="22%" alt="iOS Discovery">
-  <img src="images/ios-4.PNG" width="22%" alt="iOS Beacon Detail">
+  <img src="images/ios-1.png" width="22%" alt="iOS Broadcast">
+  <img src="images/ios-2.png" width="22%" alt="iOS Discovery">
+  <img src="images/ios-3.png" width="22%" alt="iOS Beacon Detail">
+  <img src="images/ios-4.png" width="22%" alt="iOS Logs">
 </div>
 
 ### macOS Previews
 
 <div align="center">
-  <img src="images/mac-1.png" width="45%" alt="macOS Broadcast">
-  <img src="images/mac-2.png" width="45%" alt="macOS Discovery">
+  <img src="images/macos-1.png" width="45%" alt="macOS Broadcast">
+  <img src="images/macos-2.png" width="45%" alt="macOS Discovery">
 </div>
 
 ## Key Features
@@ -55,6 +55,12 @@ Your iBeacon Simulator eliminates the need for physical beacon hardware when tes
 * **Always-On Regions:** Utilizes CoreLocation to monitor UUID regions even when the app is minimized or killed.
 * **Background Ranging:** Temporarily wakes the app upon region entry to pinpoint the exact beacon (Major/Minor) that triggered the event.
 * **Rich Notifications:** Delivers detailed local alerts on entry (e.g., "Found 2 beacons nearby") and exit, along with haptic feedback for foreground discoveries.
+
+### Session-Based Live Logging
+* **Real-Time Event Stream:** Track background region changes, active scanning state shifts, and beacon discoveries in an organized chronological ledger.
+* **Granular Beacon Metrics:** View immediate snapshot data upon discovery, including UUID targets, Major/Minor IDs, real-time RSSI fluctuations, and exact calculated distances.
+* **State Lifecycle Tracking:** Visually audit when a beacon transitions out of range (`stale`) and exactly when it is re-discovered.
+* **Ephemeral Memory Footprint:** Built as session-isolated logs with quick-clear capabilities to keep your debugging environment lightweight and private.
 
 ## Technical Architecture
 
