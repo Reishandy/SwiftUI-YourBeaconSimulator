@@ -29,7 +29,7 @@ class BroadcastBeacon: Identifiable, Equatable {
 	
 	var shareString: String {
 		 """
-		 iBeacon configuration for \(beaconName)
+		 Beacon configuration for \(beaconName)
 		 ------------------------------------
 		 Project: \(project?.name ?? "Unknown")
 		 UUID: \(project?.proximityUUID ?? "Unknown")

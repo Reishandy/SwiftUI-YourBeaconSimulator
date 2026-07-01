@@ -27,7 +27,7 @@ struct BroadcastView: View {
 				if broadcastViewModel.bluetoothAuthorization == .notDetermined {
 					EmptyStateView(
 						systemImage: "sensor.radiowaves.left.and.right",
-						title: "Broadcast as an iBeacon",
+						title: "Broadcast as a Beacon",
 						subtitle: "To turn your device into a simulator, we need permission to use your Bluetooth antenna.",
 						actionText: "Enable Broadcasting"
 					) {
@@ -39,7 +39,7 @@ struct BroadcastView: View {
 					EmptyStateView(
 						systemImage: "exclamationmark.lock.fill",
 						title: "Bluetooth Access Blocked",
-						subtitle: "Please enable Bluetooth permission in Settings to simulate an iBeacon.",
+						subtitle: "Please enable Bluetooth permission in Settings to simulate a Beacon.",
 						actionText: "Open Settings"
 					) {
 						if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -50,7 +50,7 @@ struct BroadcastView: View {
 					EmptyStateView(
 						systemImage: "exclamationmark.lock.fill",
 						title: "Bluetooth Access Blocked",
-						subtitle: "Please enable Bluetooth permission in System Settings to discover iBeacons."
+						subtitle: "Please enable Bluetooth permission in System Settings to discover Beacons."
 					)
 #endif
 				} else if broadcastViewModel.bluetoothAuthorization == .allowedAlways &&
@@ -68,9 +68,9 @@ struct BroadcastView: View {
 						if broadcastViewModel.projects.isEmpty {
 							EmptyStateView(
 								systemImage: "antenna.radiowaves.left.and.right.slash",
-								title: "No iBeacon here",
-								subtitle: "Add a new iBeacon first",
-								actionText: "Add iBeacon"
+								title: "No Beacon here",
+								subtitle: "Add a new Beacon first",
+								actionText: "Add Beacon"
 							) {
 								broadcastViewModel.isAddSheetPresented = true
 							}

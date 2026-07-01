@@ -21,7 +21,7 @@ struct DiscoverView: View {
 					EmptyStateView(
 						systemImage: "location.fill",
 						title: "Location Access Required",
-						subtitle: "iBeacon discovery requires location permissions to detect and measure distances to nearby beacons.",
+						subtitle: "Beacon discovery requires location permissions to detect and measure distances to nearby beacons.",
 						actionText: "Enable Location"
 					) {
 						discoverViewModel.requestLocationPermission()
@@ -31,7 +31,7 @@ struct DiscoverView: View {
 					EmptyStateView(
 						systemImage: "location.slash.fill",
 						title: "Location Access Blocked",
-						subtitle: "Please enable Location permission in Settings to discover iBeacons.",
+						subtitle: "Please enable Location permission in Settings to discover Beacons.",
 						actionText: "Open Settings"
 					) {
 						if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -46,7 +46,7 @@ struct DiscoverView: View {
 					EmptyStateView(
 						systemImage: "sensor.radiowaves.left.and.right",
 						title: "Bluetooth Required",
-						subtitle: "To discover nearby iBeacons, we need permission to use your Bluetooth antenna.",
+						subtitle: "To discover nearby Beacons, we need permission to use your Bluetooth antenna.",
 						actionText: "Enable Bluetooth"
 					) {
 						discoverViewModel.requestBluetoothPermission()
@@ -56,7 +56,7 @@ struct DiscoverView: View {
 					EmptyStateView(
 						systemImage: "exclamationmark.lock.fill",
 						title: "Bluetooth Access Blocked",
-						subtitle: "Please enable Bluetooth permission in System Settings to discover iBeacons."
+						subtitle: "Please enable Bluetooth permission in System Settings to discover Beacons."
 					)
 				} else if discoverViewModel.bluetoothAuthorization == .allowedAlways &&
 							discoverViewModel.bluetoothState == .poweredOff {
@@ -97,7 +97,7 @@ struct DiscoverView: View {
 			}
 		} detail: {
 			if !discoverViewModel.isDiscovering {
-				Text("Start iBeacon discovery first")
+				Text("Start Beacon discovery first")
 					.foregroundColor(.secondary)
 			} else if let selectedBeacon = discoverViewModel.selectedBeacon {
 				DiscoveryDetailView(discoveredBeacon: selectedBeacon)
@@ -116,7 +116,7 @@ struct DiscoverView: View {
 					EmptyStateView(
 						systemImage: "dot.radiowaves.up.forward",
 						title: "Discovering",
-						subtitle: "No nearby iBeacon has been discovered yet.",
+						subtitle: "No nearby Beacon has been discovered yet.",
 						actionText: "Stop Discovering"
 					) {
 						withAnimation {
@@ -186,7 +186,7 @@ struct DiscoverView: View {
 			}
 			
 			if !discoverViewModel.otherBeacons.isEmpty {
-				Section("Other Discovered iBeacons") {
+				Section("Other Discovered Beacons") {
 					ForEach(discoverViewModel.otherBeacons) { beacon in
 						NavigationLink(value: beacon.id) {
 							DiscoverItemView(discoveredBeacon: beacon)

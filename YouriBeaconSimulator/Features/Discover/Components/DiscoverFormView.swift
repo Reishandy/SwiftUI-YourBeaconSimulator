@@ -72,7 +72,7 @@ struct DiscoverFormView: View {
 						}
 					}
 				} footer: {
-					Text("Enter a UUID or select an existing project to start discovering iBeacons. Your selection will be saved for next time.")
+					Text("Enter a UUID or select an existing project to start discovering Beacons. Your selection will be saved for next time.")
 				}
 				
 #if os(iOS)
