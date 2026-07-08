@@ -12,6 +12,12 @@
     <img src="https://img.shields.io/badge/macOS-14.0+-000000.svg?style=flat&logo=apple" alt="macOS">
     <img src="https://img.shields.io/badge/License-AGPL%203.0-blue.svg?style=flat" alt="License">
   </p>
+
+  <p>
+  <strong>Official Support</strong><br>
+  Questions, bug reports, or feature requests?<br>
+  Contact <a href="mailto:akbar@reishandy.id">akbar@reishandy.id</a> or visit the <a href="https://github.com/Reishandy/SwiftUI-YourBeaconSimulator/issues">Issue Tracker</a>.
+</p>
 </div>
 
 ---
@@ -35,6 +41,18 @@ Your Beacon Simulator eliminates the need for physical beacon hardware when test
   <img src="images/macos-1.png" width="45%" alt="macOS Broadcast">
   <img src="images/macos-2.png" width="45%" alt="macOS Discovery">
 </div>
+
+## Support
+
+If you have questions, need technical assistance, or would like to report a bug, I'm happy to help.
+
+### Contact
+
+- **Email:** [akbar@reishandy.id](mailto:akbar@reishandy.id)
+- **Report an Issue:** [https://github.com/Reishandy/SwiftUI-YourBeaconSimulator/issues/new](https://github.com/Reishandy/SwiftUI-YourBeaconSimulator/issues/new)
+- **Privacy Policy:** [https://policy.reishandy.id/#yourbeaconsimulator](https://policy.reishandy.id/#yourbeaconsimulator)
+
+When reporting an issue, please include your device model, operating system version, and a brief description of the problem so I can investigate it as quickly as possible.
 
 ## Key Features
 
