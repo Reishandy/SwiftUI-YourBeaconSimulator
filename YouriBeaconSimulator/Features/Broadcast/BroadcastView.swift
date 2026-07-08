@@ -29,7 +29,7 @@ struct BroadcastView: View {
 						systemImage: "sensor.radiowaves.left.and.right",
 						title: "Broadcast as a Beacon",
 						subtitle: "To turn your device into a simulator, we need permission to use your Bluetooth antenna.",
-						actionText: "Enable Broadcasting"
+						actionText: "Continue"
 					) {
 						broadcastViewModel.requestBluetoothPermission()
 					}

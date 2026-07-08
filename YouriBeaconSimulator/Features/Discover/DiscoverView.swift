@@ -11,6 +11,8 @@ import CoreLocation
 import CoreBluetooth
 
 struct DiscoverView: View {
+	@Environment(\.scenePhase) var scenePhase
+	
 	@State var discoverViewModel: DiscoverViewModel
 	
 	var body: some View {
@@ -20,9 +22,9 @@ struct DiscoverView: View {
 				if discoverViewModel.locationAuthorization == .notDetermined {
 					EmptyStateView(
 						systemImage: "location.fill",
-						title: "Location Access Required",
+						title: "Discover Beacons",
 						subtitle: "Beacon discovery requires location permissions to detect and measure distances to nearby beacons.",
-						actionText: "Enable Location"
+						actionText: "Continue"
 					) {
 						discoverViewModel.requestLocationPermission()
 					}
@@ -45,9 +47,9 @@ struct DiscoverView: View {
 				if discoverViewModel.bluetoothAuthorization == .notDetermined {
 					EmptyStateView(
 						systemImage: "sensor.radiowaves.left.and.right",
-						title: "Bluetooth Required",
+						title: "Discover Beacons",
 						subtitle: "To discover nearby Beacons, we need permission to use your Bluetooth antenna.",
-						actionText: "Enable Bluetooth"
+						actionText: "Continue"
 					) {
 						discoverViewModel.requestBluetoothPermission()
 					}
@@ -104,6 +106,13 @@ struct DiscoverView: View {
 			} else {
 				Text("Select an item from the sidebar")
 					.foregroundColor(.secondary)
+			}
+		}
+		.onChange(of: scenePhase) { oldPhase, newPhase in
+			if newPhase == .active {
+				Task {
+					await discoverViewModel.checkPermissions()
+				}
 			}
 		}
 	}

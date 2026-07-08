@@ -132,6 +132,10 @@ class DiscoverViewModel {
 #if os(iOS)
 	func requestBackgroundPermissions() {
 		Task {
+			if notificationAuthorization == .notDetermined {
+				_ = await notificationPermissionManager.requestPermission()
+			}
+			
 			if locationAuthorization == .notDetermined {
 				_ = await locationPermissionManager.requestWhenInUse()
 			}
@@ -139,10 +143,6 @@ class DiscoverViewModel {
 			if locationAuthorization == .authorizedWhenInUse {
 				preferenceService.hasRequestedAlwaysLocation = true
 				_ = await locationPermissionManager.requestAlways()
-			}
-			
-			if notificationAuthorization == .notDetermined {
-				_ = await notificationPermissionManager.requestPermission()
 			}
 		}
 	}
@@ -193,5 +193,9 @@ class DiscoverViewModel {
 	func stopDiscovery() {
 		isDiscovering = false
 		discoveryService.stopDiscovery()
+	}
+	
+	func checkPermissions() async {
+		await notificationPermissionManager.checkStatus()
 	}
 }

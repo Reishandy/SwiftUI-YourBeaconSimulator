@@ -80,7 +80,7 @@ struct DiscoverFormView: View {
 					if isBackgroundReady {
 						Toggle("Background Notifications", isOn: $isBackgroundEnabled)
 					} else {
-						Button(hasDeniedPermissions ? "Open Settings to Enable" : "Grant Permissions") {
+						Button(hasDeniedPermissions ? "Open Settings" : "Grant Permissions") {
 							withAnimation {
 								onGrantPermissionClick()
 							}
@@ -89,9 +89,9 @@ struct DiscoverFormView: View {
 					}
 				} footer: {
 					if hasDeniedPermissions {
-						Text("To receive proximity alerts while the app is closed, you must grant both \"Always\" location access and Notification permissions.")
+						Text("To receive proximity alerts while the app is closed, this feature requires both \"Always\" Location access and Notification permissions.")
 					} else {
-						Text("This will trigger a notification whenever you enter or exit the range of a beacon with this UUID while the app is in the background.")
+						Text("This feature can notify you when you enter or leave the range of a beacon while the app is in the background.\(isBackgroundReady ? "" : " To enable this, the app requires Notification permission to deliver alerts and \"Always\" Location access so iOS can monitor nearby beacons even when the app is closed.")")
 					}
 				}
 #endif
