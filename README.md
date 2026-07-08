@@ -16,7 +16,7 @@
   <p>
   <strong>Official Support</strong><br>
   Questions, bug reports, or feature requests?<br>
-  Contact <a href="mailto:akbar@reishandy.id">akbar@reishandy.id</a> or visit the <a href="https://github.com/Reishandy/SwiftUI-YouriBeaconSimulator/issues">Issue Tracker</a>.
+  Contact <a href="mailto:akbar@reishandy.id">akbar@reishandy.id</a> or visit the <a href="https://github.com/Reishandy/SwiftUI-YourBeaconSimulator/issues">Issue Tracker</a>.
 </p>
 </div>
 
