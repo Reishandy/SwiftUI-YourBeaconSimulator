@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8B62ED842FFFB2DD00F148CE /* YouriBeaconSimulatorWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8B62ED7A2FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B62ED842FFFB2DD00F148CE /* YouriBeaconSimulatorWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8B62ED7A2FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8BC964B72FFFC52C00AB4D3F /* SharedConnectivityProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC964B62FFFC52900AB4D3F /* SharedConnectivityProtocol.swift */; };
 		8BC964C12FFFC7D600AB4D3F /* SharedConnectivityProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC964B62FFFC52900AB4D3F /* SharedConnectivityProtocol.swift */; };
 /* End PBXBuildFile section */
@@ -239,6 +239,7 @@
 /* Begin PBXTargetDependency section */
 		8B62ED832FFFB2DD00F148CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 8B62ED792FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App */;
 			targetProxy = 8B62ED822FFFB2DD00F148CE /* PBXContainerItemProxy */;
 		};
