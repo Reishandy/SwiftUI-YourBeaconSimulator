@@ -63,8 +63,6 @@ struct BroadcastView: View {
 					)
 				} else {
 					ZStack {
-						listView
-						
 						if broadcastViewModel.projects.isEmpty {
 							EmptyStateView(
 								systemImage: "antenna.radiowaves.left.and.right.slash",
@@ -76,31 +74,36 @@ struct BroadcastView: View {
 							}
 							.frame(maxWidth: .infinity, maxHeight: .infinity)
 							.background(.background)
-						} else if broadcastViewModel.filteredProjectGroups.isEmpty {
-							EmptyStateView(
-								systemImage: "magnifyingglass",
-								title: "No results found",
-								subtitle: "Check the spelling or try a new search",
-								actionText: "Clear Search"
-							) {
-								broadcastViewModel.searchTerm = ""
-							}
-							.frame(maxWidth: .infinity, maxHeight: .infinity)
-							.background(.background)
+						} else {
+							listView
+#if os(iOS)
+								.searchable(
+									text: animatedSearchBinding,
+									placement: .navigationBarDrawer(displayMode: .always),
+									prompt: "Search Project or Beacon..."
+								)
+#else
+								.searchable(
+									text: animatedSearchBinding,
+									prompt: "Search Project or Beacon..."
+								)
+#endif
+								.overlay {
+									if broadcastViewModel.filteredProjectGroups.isEmpty {
+										EmptyStateView(
+											systemImage: "magnifyingglass",
+											title: "No results found",
+											subtitle: "Check the spelling or try a new search",
+											actionText: "Clear Search"
+										) {
+											broadcastViewModel.searchTerm = ""
+										}
+										.frame(maxWidth: .infinity, maxHeight: .infinity)
+										.background(.background)
+									}
+								}
 						}
 					}
-#if os(iOS)
-					.searchable(
-						text: animatedSearchBinding,
-						placement: .navigationBarDrawer(displayMode: .always),
-						prompt: "Search Project or Beacon..."
-					)
-#else
-					.searchable(
-						text: animatedSearchBinding,
-						prompt: "Search Project or Beacon..."
-					)
-#endif
 				}
 			}
 			.navigationTitle("Broadcast")
