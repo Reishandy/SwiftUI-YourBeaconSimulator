@@ -28,6 +28,10 @@ struct YouriBeaconSimulatorApp: App {
 	@State var beaconBroadcastService = BeaconBroadcastService()
 	@State var beaconDiscoveryService = BeaconDiscoveryService()
 	
+#if os(iOS)
+	@State var phoneConnectivityService = PhoneConnectivityService()
+#endif
+	
 	var deviceDescription: String {
 #if os(iOS)
 		return "\(UIDevice.current.name) (\(UIDevice.current.systemName) \(UIDevice.current.systemVersion))"
@@ -77,6 +81,16 @@ struct YouriBeaconSimulatorApp: App {
 				beaconDiscoveryService.setLogger(loggingService)
 				BackgroundMonitorService.shared.setLogger(loggingService)
 				
+#if os(iOS)
+				phoneConnectivityService.commandHandler = { command in
+					switch command {
+					case .ping:
+						return WatchCommandResult(success: true, message: "pong")
+					}
+				}
+#endif
+				
+				// TODO: Watch Logging?
 				Task {
 					await loggingService.startNewSession(
 						deviceDescription: deviceDescription,
@@ -92,6 +106,10 @@ struct YouriBeaconSimulatorApp: App {
 			if newPhase == .background {
 				beaconBroadcastService.stopBroadcasting()
 			}
+			
+#if os(iOS)
+			phoneConnectivityService.updateForegroundState(isForeground: newPhase == .active)
+#endif
 		}
 	}
 }
