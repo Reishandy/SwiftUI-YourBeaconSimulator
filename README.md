@@ -4,7 +4,7 @@
   # Your Beacon Simulator
 
   A native, multi-platform utility designed to simulate, broadcast, and discover iBeacons across iOS, iPadOS, and macOS.
-
+  
   <!-- Badges -->
   <p>
     <img src="https://img.shields.io/badge/Swift-6.0-F05138.svg?style=flat&logo=swift" alt="Swift 6.0">
@@ -13,11 +13,9 @@
     <img src="https://img.shields.io/badge/License-AGPL%203.0-blue.svg?style=flat" alt="License">
   </p>
 
-  <p>
-  <strong>Official Support</strong><br>
-  Questions, bug reports, or feature requests?<br>
-  Contact <a href="mailto:akbar@reishandy.id">akbar@reishandy.id</a> or visit the <a href="https://github.com/Reishandy/SwiftUI-YourBeaconSimulator/issues">Issue Tracker</a>.
-</p>
+  <a href="https://apps.apple.com/id/app/your-beacon-simulator/id6785000798?itscg=30200&itsct=apps_box_badge&mttnsubad=6785000798" style="display: inline-block;">
+  <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1783468800" alt="Download on the App Store" style="width: 245px; height: 82px; vertical-align: middle; object-fit: contain;" />
+  </a>
 </div>
 
 ---
