@@ -17,6 +17,7 @@ struct ContentView: View {
 		(connectivity.phoneState?.isForeground == false)
 	}
 	
+	// TODO: Update iOS side to use isDiscovering
 	var body: some View {
 		ZStack {
 			NavigationStack {
@@ -26,9 +27,6 @@ struct ContentView: View {
 							title: "Broadcast",
 							systemImage: "sensor.radiowaves.left.and.right.fill"
 						)
-						.onTapGesture {
-							connectivity.send(.startBroadcast(beaconID: UUID()))
-						}
 					}
 					
 					NavigationLink(destination: DiscoverView()) {
@@ -64,6 +62,10 @@ struct ContentView: View {
 		.animation(.default, value: connectivity.phoneState?.isDiscovering)
 		.animation(.default, value: connectivity.phoneState?.broadcastingBeaconID)
 		.animation(.easeInOut, value: connectivity.showError)
+		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.isForeground)
+		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.isDiscovering)
+		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.broadcastingBeaconID)
+		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.showError)
 	}
 }
 
@@ -74,17 +76,18 @@ struct NavListItemView: View {
 	var body: some View {
 		VStack(alignment: .leading, spacing: 10) {
 			Image(systemName: systemImage)
-				.font(.title)
+				.font(.title2)
 				.foregroundStyle(.accent)
 			
 			Text(title)
 				.bold()
 		}
-		.frame(height: 120)
+		.padding()
+		.padding(.vertical)
 	}
 }
 
-#Preview() {
+#Preview {
 	ContentView()
 		.environment(WatchConnectivityService.previewMock(
 			state: WatchPreviewData.idleForegroundState
