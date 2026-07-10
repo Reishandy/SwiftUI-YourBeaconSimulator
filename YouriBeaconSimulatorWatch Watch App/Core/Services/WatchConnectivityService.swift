@@ -85,7 +85,7 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 		showError = true
 		errorClearTask?.cancel()
 		errorClearTask = Task {
-			try? await Task.sleep(for: .seconds(0.5))
+			try? await Task.sleep(for: .seconds(1))
 			guard !Task.isCancelled else { return }
 			await MainActor.run { self.showError = false }
 		}

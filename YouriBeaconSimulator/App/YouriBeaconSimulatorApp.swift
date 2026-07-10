@@ -106,7 +106,6 @@ struct YouriBeaconSimulatorApp: App {
 						
 					case .stopBroadcast:
 						beaconBroadcastService.stopBroadcasting()
-						
 					case .startDiscovery(let projectID):
 						guard
 							let project = try? container.mainContext.fetch(

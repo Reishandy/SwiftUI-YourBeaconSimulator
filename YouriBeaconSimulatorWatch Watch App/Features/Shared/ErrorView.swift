@@ -18,6 +18,7 @@ struct ErrorView: View {
 				.multilineTextAlignment(.center)
 				.fixedSize(horizontal: false, vertical: true)
 		}
+		.padding()
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.foregroundStyle(.white)
 		.background(.red)

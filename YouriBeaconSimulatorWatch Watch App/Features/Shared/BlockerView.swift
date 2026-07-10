@@ -26,6 +26,8 @@ struct BlockerView: View {
 				.fixedSize(horizontal: false, vertical: true)
 		}
 		.padding()
+		.frame(maxWidth: .infinity, maxHeight: .infinity)
+		.background(.black)
     }
 }
 

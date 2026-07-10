@@ -10,21 +10,28 @@ import SwiftUI
 struct ContentView: View {
 	@Environment(WatchConnectivityService.self) private var connectivity
 	
+	private var isShowingOverlay: Bool {
+		(connectivity.phoneState?.isDiscovering ?? false) ||
+		(connectivity.phoneState?.broadcastingBeaconID != nil) ||
+		connectivity.showError ||
+		(connectivity.phoneState?.isForeground == false)
+	}
+	
 	var body: some View {
-		NavigationStack {
-			if connectivity.showError {
-				ErrorView()
-			} else if connectivity.phoneState?.isForeground == true {
-				// TODO: Nav
+		ZStack {
+			NavigationStack {
 				List {
-					NavigationLink(destination: EmptyView()) {
+					NavigationLink(destination: BroadcastView()) {
 						NavListItemView(
 							title: "Broadcast",
 							systemImage: "sensor.radiowaves.left.and.right.fill"
 						)
+						.onTapGesture {
+							connectivity.send(.startBroadcast(beaconID: UUID()))
+						}
 					}
 					
-					NavigationLink(destination: EmptyView()) {
+					NavigationLink(destination: DiscoverView()) {
 						NavListItemView(
 							title: "Discover",
 							systemImage: "dot.radiowaves.up.forward"
@@ -32,12 +39,30 @@ struct ContentView: View {
 					}
 				}
 				.listStyle(.carousel)
+				.scrollIndicators(isShowingOverlay ? .hidden : .automatic)
+				.scrollDisabled(isShowingOverlay)
 				.navigationTitle("Companion") // TODO: Title?
-			} else {
+			}
+			
+			if connectivity.phoneState?.isDiscovering ?? false {
+				ActiveDiscoverView()
+			}
+			
+			if let beaconID = connectivity.phoneState?.broadcastingBeaconID {
+				ActiveBroadcastView()
+			}
+			
+			if connectivity.showError {
+				ErrorView()
+			}
+			
+			if connectivity.phoneState?.isForeground == false {
 				BlockerView()
 			}
 		}
 		.animation(.default, value: connectivity.phoneState?.isForeground)
+		.animation(.default, value: connectivity.phoneState?.isDiscovering)
+		.animation(.default, value: connectivity.phoneState?.broadcastingBeaconID)
 		.animation(.easeInOut, value: connectivity.showError)
 	}
 }
@@ -59,30 +84,9 @@ struct NavListItemView: View {
 	}
 }
 
-#Preview("Idle (Foreground)") {
+#Preview() {
 	ContentView()
 		.environment(WatchConnectivityService.previewMock(
 			state: WatchPreviewData.idleForegroundState
-		))
-}
-
-#Preview("Discovering Beacons") {
-	ContentView()
-		.environment(WatchConnectivityService.previewMock(
-			state: WatchPreviewData.discoveringState
-		))
-}
-
-#Preview("App in Background (Blocked)") {
-	ContentView()
-		.environment(WatchConnectivityService.previewMock(
-			state: WatchPreviewData.backgroundState
-		))
-}
-#Preview("Error Toast") {
-	ContentView()
-		.environment(WatchConnectivityService.previewMock(
-			state: WatchPreviewData.idleForegroundState,
-			showFailureToast: true
 		))
 }
