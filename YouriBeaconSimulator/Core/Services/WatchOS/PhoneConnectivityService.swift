@@ -11,58 +11,44 @@ import Observation
 
 @Observable
 final class PhoneConnectivityService: NSObject, WCSessionDelegate {
+	static let shared = PhoneConnectivityService()
+	
 	private(set) var isWatchReachable: Bool = false
 	
-	var commandHandler: ((WatchCommand) -> WatchCommandResult)?
+	var onCommand: ((WatchCommand) -> Void)?
 	
 	private var session: WCSession { WCSession.default }
+	private let encoder = JSONEncoder()
+	private let decoder = JSONDecoder()
 	
-	override init() {
+	private override init() {
 		super.init()
 		guard WCSession.isSupported() else { return }
 		session.delegate = self
 		session.activate()
 	}
 	
-	func updateForegroundState(isForeground: Bool) {
+	func pushState(_ state: PhoneState) {
 		guard WCSession.isSupported(), session.activationState == .activated else { return }
-		do {
-			try session.updateApplicationContext([
-				PhoneToWatchContextKey.isForeground: isForeground
-			])
-		} catch {
-			print("Failed to push foreground state to watch: \(error)")
-		}
+		guard let data = try? encoder.encode(state) else { return }
+		try? session.updateApplicationContext([ConnectivityKey.payload: data])
 	}
 	
-	func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
+	func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
 		guard
 			let data = message[ConnectivityKey.payload] as? Data,
-			let command = try? JSONDecoder().decode(WatchCommand.self, from: data)
-		else {
-			replyHandler([ConnectivityKey.payload: (try? JSONEncoder().encode(
-				WatchCommandResult(success: false, message: "Malformed command")
-			)) ?? Data()])
-			return
-		}
+			let command = try? decoder.decode(WatchCommand.self, from: data)
+		else { return }
 		
-		let result = commandHandler?(command)
-		?? WatchCommandResult(success: false, message: "No handler registered")
-		
-		let resultData = (try? JSONEncoder().encode(result)) ?? Data()
-		replyHandler([ConnectivityKey.payload: resultData])
+		Task { @MainActor in self.onCommand?(command) }
 	}
 	
 	func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-		Task { @MainActor in
-			self.isWatchReachable = session.isReachable
-		}
+		Task { @MainActor in self.isWatchReachable = session.isReachable }
 	}
 	
 	func sessionReachabilityDidChange(_ session: WCSession) {
-		Task { @MainActor in
-			self.isWatchReachable = session.isReachable
-		}
+		Task { @MainActor in self.isWatchReachable = session.isReachable }
 	}
 	
 	func sessionDidBecomeInactive(_ session: WCSession) { }

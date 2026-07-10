@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum BeaconProximity: String, CaseIterable, Sendable {
+enum BeaconProximity: String, CaseIterable, Sendable, Codable {
 	case immediate = "Immediate"
 	case near = "Near"
 	case far = "Far"

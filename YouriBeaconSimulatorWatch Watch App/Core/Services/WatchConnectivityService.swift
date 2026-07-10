@@ -10,34 +10,30 @@ import Observation
 
 @Observable
 final class WatchConnectivityService: NSObject, WCSessionDelegate {
-	private(set) var isPhoneForeground: Bool = false
+	static let shared = WatchConnectivityService()
+	
+	private(set) var phoneState: PhoneState?
 	private(set) var isReachable: Bool = false
+	private(set) var showFailureToast: Bool = false
 	
+	private var toastClearTask: Task<Void, Never>?
 	private var session: WCSession { WCSession.default }
+	private let encoder = JSONEncoder()
+	private let decoder = JSONDecoder()
 	
-	override init() {
+	private override init() {
 		super.init()
 		guard WCSession.isSupported() else { return }
 		session.delegate = self
 		session.activate()
 	}
 	
-	func send(_ command: WatchCommand, completion: @escaping (WatchCommandResult) -> Void) {
-		guard session.isReachable, let data = try? JSONEncoder().encode(command) else {
-			completion(WatchCommandResult(success: false, message: "Phone not reachable"))
-			return
+	func send(_ command: WatchCommand) {
+		guard session.isReachable, let data = try? encoder.encode(command) else { return }
+		session.sendMessage([ConnectivityKey.payload: data], replyHandler: nil) { error in
+			// TODO: Display error on state?
+			print("WatchConnectivityService: send failed - \(error.localizedDescription)")
 		}
-		
-		session.sendMessage([ConnectivityKey.payload: data], replyHandler: { reply in
-			if let resultData = reply[ConnectivityKey.payload] as? Data,
-			   let result = try? JSONDecoder().decode(WatchCommandResult.self, from: resultData) {
-				Task { @MainActor in completion(result) }
-			} else {
-				Task { @MainActor in completion(WatchCommandResult(success: false, message: "Malformed reply")) }
-			}
-		}, errorHandler: { error in
-			Task { @MainActor in completion(WatchCommandResult(success: false, message: error.localizedDescription)) }
-		})
 	}
 	
 	func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
@@ -54,17 +50,28 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 	}
 	
 	private func applyContext(_ context: [String: Any]) {
-		let foreground = context[PhoneToWatchContextKey.isForeground] as? Bool ?? false
-		Task { @MainActor in self.isPhoneForeground = foreground }
+		guard
+			let data = context[ConnectivityKey.payload] as? Data,
+			let decoded = try? decoder.decode(PhoneState.self, from: data)
+		else { return }
+		
+		Task { @MainActor in
+			let previousFailure = self.phoneState?.commandFailedAt
+			self.phoneState = decoded
+			
+			if let failedAt = decoded.commandFailedAt, failedAt != previousFailure {
+				self.flashFailureToast()
+			}
+		}
+	}
+	
+	private func flashFailureToast() {
+		showFailureToast = true
+		toastClearTask?.cancel()
+		toastClearTask = Task {
+			try? await Task.sleep(for: .seconds(2))
+			guard !Task.isCancelled else { return }
+			await MainActor.run { self.showFailureToast = false }
+		}
 	}
 }
-
-#if DEBUG
-extension WatchConnectivityService {
-	static func preview(isPhoneForeground: Bool) -> WatchConnectivityService {
-		let service = WatchConnectivityService()
-		service.isPhoneForeground = isPhoneForeground
-		return service
-	}
-}
-#endif

@@ -9,12 +9,9 @@ import SwiftUI
 
 @main
 struct YouriBeaconSimulatorWatch_Watch_AppApp: App {
-	@State private var watchConnectivityService = WatchConnectivityService()
-	
     var body: some Scene {
         WindowGroup {
             ContentView()
-				.environment(watchConnectivityService)
         }
     }
 }

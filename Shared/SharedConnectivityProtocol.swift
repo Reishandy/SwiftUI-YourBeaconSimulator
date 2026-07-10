@@ -11,16 +11,23 @@ enum ConnectivityKey {
 	static let payload = "payload"
 }
 
-enum PhoneToWatchContextKey {
-	static let isForeground = "isForeground"
-}
-
-// TODO: ADD COMMANDS HERE (SYNC BOTH TARGET)
 enum WatchCommand: Codable {
-	case ping
+	case startDiscovery(projectID: UUID)
+	case stopDiscovery
+	
+	case startBroadcast(beaconID: UUID)
+	case stopBroadcast
 }
 
-struct WatchCommandResult: Codable {
-	let success: Bool
-	let message: String?
+struct PhoneState: Codable {
+	var isForeground: Bool = false
+
+	var broadcastingBeaconID: UUID? = nil
+	var broadcastableProjects: [BroadcastProjectSummary] = []
+	
+	var isDiscovering: Bool = false
+	var discoveredBeacons: [DiscoveredBeaconSummary] = []
+	
+	var commandFailedAt: Date? = nil
+	var updatedAt: Date = .now
 }

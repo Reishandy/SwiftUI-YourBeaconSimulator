@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import CoreBluetooth
 
 @main
 struct YouriBeaconSimulatorApp: App {
@@ -29,7 +30,7 @@ struct YouriBeaconSimulatorApp: App {
 	@State var beaconDiscoveryService = BeaconDiscoveryService()
 	
 #if os(iOS)
-	@State var phoneConnectivityService = PhoneConnectivityService()
+	@State private var phoneStateAggregator: PhoneStateAggregator?
 #endif
 	
 	var deviceDescription: String {
@@ -82,15 +83,48 @@ struct YouriBeaconSimulatorApp: App {
 				BackgroundMonitorService.shared.setLogger(loggingService)
 				
 #if os(iOS)
-				phoneConnectivityService.commandHandler = { command in
+				phoneStateAggregator = PhoneStateAggregator(
+					broadcastService: beaconBroadcastService,
+					discoveryService: beaconDiscoveryService,
+					modelContext: container.mainContext
+				)
+				
+				PhoneConnectivityService.shared.onCommand = { [beaconBroadcastService, beaconDiscoveryService] command in
 					switch command {
-					case .ping:
-						return WatchCommandResult(success: true, message: "pong")
+					case .startBroadcast(let beaconID):
+						guard
+							let beacon = try? container.mainContext.fetch(
+								FetchDescriptor<BroadcastBeacon>(predicate: #Predicate { $0.id == beaconID })
+							).first,
+							bluetoothPermissionManager.authorization == .allowedAlways,
+							bluetoothPermissionManager.state == .poweredOn
+						else {
+							phoneStateAggregator?.setCommandFailed()
+							return
+						}
+						beaconBroadcastService.startBroadcasting(beacon: beacon, txPower: -59)
+						
+					case .stopBroadcast:
+						beaconBroadcastService.stopBroadcasting()
+						
+					case .startDiscovery(let projectID):
+						guard
+							let project = try? container.mainContext.fetch(
+								FetchDescriptor<BroadcastProject>(predicate: #Predicate { $0.id == projectID })
+							).first,
+							let uuid = UUID(uuidString: project.proximityUUID)
+						else {
+							phoneStateAggregator?.setCommandFailed()
+							return
+						}
+						beaconDiscoveryService.startDiscovery(uuid: uuid) { }
+						
+					case .stopDiscovery:
+						beaconDiscoveryService.stopDiscovery()
 					}
 				}
 #endif
 				
-				// TODO: Watch Logging?
 				Task {
 					await loggingService.startNewSession(
 						deviceDescription: deviceDescription,
@@ -108,7 +142,7 @@ struct YouriBeaconSimulatorApp: App {
 			}
 			
 #if os(iOS)
-			phoneConnectivityService.updateForegroundState(isForeground: newPhase == .active)
+			phoneStateAggregator?.setForeground(newPhase == .active)
 #endif
 		}
 	}

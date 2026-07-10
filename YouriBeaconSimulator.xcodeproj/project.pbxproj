@@ -66,6 +66,11 @@
 			path = YouriBeaconSimulator;
 			sourceTree = "<group>";
 		};
+		8BFAD14E300088ED0078C7DB /* Domain */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Domain;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +94,7 @@
 		8BC964C22FFFC81700AB4D3F /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				8BFAD14E300088ED0078C7DB /* Domain */,
 				8BC964B62FFFC52900AB4D3F /* SharedConnectivityProtocol.swift */,
 			);
 			path = Shared;
@@ -130,6 +136,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				8B62ED7B2FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App */,
+				8BFAD14E300088ED0078C7DB /* Domain */,
 			);
 			name = "YouriBeaconSimulatorWatch Watch App";
 			packageProductDependencies = (
@@ -154,6 +161,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				8BDACF592FEC2B64009BB682 /* YouriBeaconSimulator */,
+				8BFAD14E300088ED0078C7DB /* Domain */,
 			);
 			name = YouriBeaconSimulator;
 			packageProductDependencies = (

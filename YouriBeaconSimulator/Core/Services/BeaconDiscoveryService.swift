@@ -15,7 +15,7 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 	
 	private var discoverer: BeaconDiscoverer
 	
-	private var isScanning = false
+	private(set) var isDiscovering = false
 	private var onNewBeaconFound: (() -> Void)?
 	private var refreshTask: Task<Void, Never>?
 	
@@ -35,8 +35,8 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 	}
 	
 	func startDiscovery(uuid: UUID, onNewBeaconFound: @escaping () -> Void) {
-		guard !isScanning else { return }
-		self.isScanning = true
+		guard !isDiscovering else { return }
+		self.isDiscovering = true
 		self.discoveredBeacons = []
 		self.onNewBeaconFound = onNewBeaconFound
 		
@@ -47,7 +47,7 @@ class BeaconDiscoveryService: BeaconDiscovererDelegate {
 	}
 	
 	func stopDiscovery() {
-		self.isScanning = false
+		self.isDiscovering = false
 		self.onNewBeaconFound = nil
 		self.refreshTask?.cancel()
 		self.refreshTask = nil
