@@ -142,7 +142,7 @@ struct YouriBeaconSimulatorApp: App {
 			}
 			
 #if os(iOS)
-			phoneStateAggregator?.setForeground(newPhase == .active)
+			phoneStateAggregator?.setForeground(newPhase != .background)
 #endif
 		}
 	}
