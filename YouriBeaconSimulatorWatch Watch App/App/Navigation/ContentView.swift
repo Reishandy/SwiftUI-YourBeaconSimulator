@@ -12,15 +12,9 @@ struct ContentView: View {
 	
 	var body: some View {
 		NavigationStack {
-			// TODO: Error toeast
-			if connectivity.showFailureToast {
-				Label("Command failed", systemImage: "exclamationmark.triangle")
-					.font(.caption2)
-					.padding(6)
-					.background(.red.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
-			}
-			
-			if connectivity.phoneState?.isForeground == true {
+			if connectivity.showError {
+				ErrorView()
+			} else if connectivity.phoneState?.isForeground == true {
 				// TODO: Nav
 				List {
 					NavigationLink(destination: EmptyView()) {
@@ -28,9 +22,6 @@ struct ContentView: View {
 							title: "Broadcast",
 							systemImage: "sensor.radiowaves.left.and.right.fill"
 						)
-						.onTapGesture {
-							connectivity.send(.startBroadcast(beaconID: UUID()))
-						}
 					}
 					
 					NavigationLink(destination: EmptyView()) {
@@ -38,9 +29,6 @@ struct ContentView: View {
 							title: "Discover",
 							systemImage: "dot.radiowaves.up.forward"
 						)
-						.onTapGesture {
-							connectivity.send(.startDiscovery(projectID: UUID()))
-						}
 					}
 				}
 				.listStyle(.carousel)
@@ -50,6 +38,7 @@ struct ContentView: View {
 			}
 		}
 		.animation(.default, value: connectivity.phoneState?.isForeground)
+		.animation(.easeInOut, value: connectivity.showError)
 	}
 }
 

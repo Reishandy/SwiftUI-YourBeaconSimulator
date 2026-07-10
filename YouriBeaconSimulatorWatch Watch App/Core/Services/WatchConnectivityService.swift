@@ -14,9 +14,9 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 	
 	private(set) var phoneState: PhoneState?
 	private(set) var isReachable: Bool = false
-	private(set) var showFailureToast: Bool = false
+	private(set) var showError: Bool = false
 	
-	private var toastClearTask: Task<Void, Never>?
+	private var errorClearTask: Task<Void, Never>?
 	private var session: WCSession { WCSession.default }
 	private let encoder = JSONEncoder()
 	private let decoder = JSONDecoder()
@@ -37,7 +37,7 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 	static func previewMock(state: PhoneState? = nil, showFailureToast: Bool = false) -> WatchConnectivityService {
 		let service = WatchConnectivityService(isMock: true)
 		service.phoneState = state
-		service.showFailureToast = showFailureToast
+		service.showError = showFailureToast
 		return service
 	}
 #endif
@@ -52,11 +52,23 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 	
 	func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
 		applyContext(session.receivedApplicationContext)
-		Task { @MainActor in self.isReachable = session.isReachable }
+		Task { @MainActor in
+			self.isReachable = session.isReachable
+			
+			if !session.isReachable {
+				self.phoneState?.isForeground = false
+			}
+		}
 	}
 	
 	func sessionReachabilityDidChange(_ session: WCSession) {
-		Task { @MainActor in self.isReachable = session.isReachable }
+		Task { @MainActor in
+			self.isReachable = session.isReachable
+			
+			if !session.isReachable {
+				self.phoneState?.isForeground = false
+			}
+		}
 	}
 	
 	func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
@@ -70,22 +82,24 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 		else { return }
 		
 		Task { @MainActor in
+			let isInitialLoad = self.phoneState == nil
 			let previousFailure = self.phoneState?.commandFailedAt
+			
 			self.phoneState = decoded
 			
-			if let failedAt = decoded.commandFailedAt, failedAt != previousFailure {
+			if !isInitialLoad, let failedAt = decoded.commandFailedAt, failedAt != previousFailure {
 				self.flashFailureToast()
 			}
 		}
 	}
 	
 	private func flashFailureToast() {
-		showFailureToast = true
-		toastClearTask?.cancel()
-		toastClearTask = Task {
-			try? await Task.sleep(for: .seconds(2))
+		showError = true
+		errorClearTask?.cancel()
+		errorClearTask = Task {
+			try? await Task.sleep(for: .seconds(0.5))
 			guard !Task.isCancelled else { return }
-			await MainActor.run { self.showFailureToast = false }
+			await MainActor.run { self.showError = false }
 		}
 	}
 }

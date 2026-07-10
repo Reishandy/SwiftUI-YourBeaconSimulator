@@ -9,7 +9,18 @@ import SwiftUI
 
 struct ErrorView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+		VStack(spacing: 4) {
+			Image(systemName: "exclamationmark.triangle")
+				.font(.title)
+			
+			Text("Command Failed")
+				.font(.headline)
+				.multilineTextAlignment(.center)
+				.fixedSize(horizontal: false, vertical: true)
+		}
+		.frame(maxWidth: .infinity, maxHeight: .infinity)
+		.foregroundStyle(.white)
+		.background(.red)
     }
 }
 
