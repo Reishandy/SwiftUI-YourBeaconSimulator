@@ -74,7 +74,7 @@ struct DiscoverView: View {
 #endif
 			}
 			.navigationTitle(discoverViewModel.isDiscovering ? "Discovering" : "Discover")
-			.navigationSubtitle(discoverViewModel.isDiscovering ? discoverViewModel.proximityUUID : "")
+			.navigationSubtitle(discoverViewModel.isDiscovering ? discoverViewModel.selectedProject?.name ?? "" : "")
 			.navigationSplitViewColumnWidth(min: 300, ideal: 300, max: 500)
 			.toolbar {
 				if discoverViewModel.isDiscovering {
