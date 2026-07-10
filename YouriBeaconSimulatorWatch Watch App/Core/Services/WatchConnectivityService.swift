@@ -52,23 +52,11 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 	
 	func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
 		applyContext(session.receivedApplicationContext)
-		Task { @MainActor in
-			self.isReachable = session.isReachable
-			
-			if !session.isReachable {
-				self.phoneState?.isForeground = false
-			}
-		}
+		Task { @MainActor in self.isReachable = session.isReachable }
 	}
 	
 	func sessionReachabilityDidChange(_ session: WCSession) {
-		Task { @MainActor in
-			self.isReachable = session.isReachable
-			
-			if !session.isReachable {
-				self.phoneState?.isForeground = false
-			}
-		}
+		Task { @MainActor in self.isReachable = session.isReachable }
 	}
 	
 	func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {

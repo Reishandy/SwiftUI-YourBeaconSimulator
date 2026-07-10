@@ -55,7 +55,7 @@ struct NavListItemView: View {
 			Text(title)
 				.bold()
 		}
-		.frame(height: 100)
+		.frame(height: 120)
 	}
 }
 
