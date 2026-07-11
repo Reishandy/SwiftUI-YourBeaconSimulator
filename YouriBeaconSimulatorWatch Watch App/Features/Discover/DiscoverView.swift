@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct DiscoverView: View {
-	@Environment(WatchConnectivityService.self) private var connectivity
+	let projects: [BroadcastProjectSummary]
+	let onClick: (UUID) -> Void
 	
     var body: some View {
 		List {
-			ForEach(connectivity.phoneState?.broadcastableProjects ?? []) { project in
+			ForEach(projects) { project in
 				Button {
-					connectivity.send(.startDiscovery(projectID: project.id))
+					onClick(project.id)
 				} label: {
 					VStack(alignment: .leading) {
 						Text(project.name)
@@ -36,9 +37,9 @@ struct DiscoverView: View {
 
 #Preview {
 	NavigationStack {
-		DiscoverView()
-			.environment(WatchConnectivityService.previewMock(
-				state: WatchPreviewData.idleForegroundState
-			))
+		DiscoverView(
+			projects: WatchPreviewData.projects,
+			onClick: { _ in }
+		)
 	}
 }

@@ -17,19 +17,32 @@ struct ContentView: View {
 		(connectivity.phoneState?.isForeground == false)
 	}
 	
-	// TODO: Update iOS side to use isDiscovering
+	private var projects: [BroadcastProjectSummary] {
+		connectivity.phoneState?.broadcastableProjects ?? []
+	}
+	
 	var body: some View {
 		ZStack {
 			NavigationStack {
 				List {
-					NavigationLink(destination: BroadcastView()) {
+					NavigationLink(destination: BroadcastView(
+						projects: projects,
+						onClick: { beaconID in
+							connectivity.send(.startBroadcast(beaconID: beaconID))
+						}
+					)) {
 						NavListItemView(
 							title: "Broadcast",
 							systemImage: "sensor.radiowaves.left.and.right.fill"
 						)
 					}
 					
-					NavigationLink(destination: DiscoverView()) {
+					NavigationLink(destination: DiscoverView(
+						projects: projects,
+						onClick: { projectID in
+							connectivity.send(.startDiscovery(projectID: projectID))
+						}
+					)) {
 						NavListItemView(
 							title: "Discover",
 							systemImage: "dot.radiowaves.up.forward"
@@ -46,8 +59,18 @@ struct ContentView: View {
 				ActiveDiscoverView()
 			}
 			
-			if let beaconID = connectivity.phoneState?.broadcastingBeaconID {
-				ActiveBroadcastView()
+			if let state = connectivity.phoneState,
+			   let beaconID = state.broadcastingBeaconID,
+			   let project = state.broadcastableProjects.first(where: { $0.beacons.contains(where: { $0.id == beaconID }) }),
+			   let beacon = project.beacons.first(where: { $0.id == beaconID }) {
+				
+				ActiveBroadcastView(
+					beacon: beacon,
+					projectName: project.name,
+					onStop: {
+						connectivity.send(.stopBroadcast)
+					}
+				)
 			}
 			
 			if connectivity.showError {

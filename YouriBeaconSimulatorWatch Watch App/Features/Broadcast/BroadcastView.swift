@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct BroadcastView: View {
-	@Environment(WatchConnectivityService.self) private var connectivity
+	let projects: [BroadcastProjectSummary]
+	let onClick: (UUID) -> Void
 	
     var body: some View {
 		List {
-			ForEach(connectivity.phoneState?.broadcastableProjects ?? []) { project in
+			ForEach(projects) { project in
 				Section(project.name) {
 					ForEach(project.beacons) { beacon in
 						Button {
-							connectivity.send(.startBroadcast(beaconID: beacon.id))
+							onClick(beacon.id)
 						} label: {
 							HStack {
 								VStack(alignment: .leading) {
@@ -46,9 +47,9 @@ struct BroadcastView: View {
 
 #Preview {
 	NavigationStack {
-		BroadcastView()
-			.environment(WatchConnectivityService.previewMock(
-				state: WatchPreviewData.idleForegroundState
-			))
+		BroadcastView(
+			projects: WatchPreviewData.projects,
+			onClick: { _ in }
+		)
 	}
 }
