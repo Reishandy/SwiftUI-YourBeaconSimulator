@@ -11,7 +11,7 @@ struct BroadcastView: View {
 	let projects: [BroadcastProjectSummary]
 	let onClick: (UUID) -> Void
 	
-    var body: some View {
+	var body: some View {
 		List {
 			ForEach(projects) { project in
 				Section(project.name) {
@@ -21,15 +21,19 @@ struct BroadcastView: View {
 						} label: {
 							HStack {
 								VStack(alignment: .leading) {
-									Text("Major: \(String(beacon.majorID))")
+									Text(beacon.beaconName)
 										.font(.caption)
+									
+									Text("Major: \(String(beacon.majorID))")
+										.font(.caption2)
+										.foregroundColor(.secondary)
 									
 									Text("Minor: \(String(beacon.minorID))")
 										.font(.caption2)
-										.foregroundStyle(.secondary)
+										.foregroundColor(.secondary)
 								}
 								
-								Spacer()
+								Spacer(minLength: 12)
 								
 								Image(systemName: "play.fill")
 							}
@@ -42,7 +46,7 @@ struct BroadcastView: View {
 		.listStyle(.carousel)
 		.navigationTitle("Broadcast")
 		.navigationBarTitleDisplayMode(.inline)
-    }
+	}
 }
 
 #Preview {
