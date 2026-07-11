@@ -56,7 +56,12 @@ struct ContentView: View {
 			}
 			
 			if connectivity.phoneState?.isDiscovering ?? false {
-				ActiveDiscoverView()
+				ActiveDiscoverView(
+					discoveredBeacons: connectivity.phoneState?.discoveredBeacons ?? [],
+					onStop: {
+						connectivity.send(.stopDiscovery)
+					}
+				)
 			}
 			
 			if let state = connectivity.phoneState,
