@@ -46,7 +46,7 @@ class DiscoverViewModel {
 	var locationAuthorization: CLAuthorizationStatus { locationPermissionManager.authorizationStatus }
 	var notificationAuthorization: UNAuthorizationStatus { notificationPermissionManager.authorizationStatus }
 	
-	var isDiscovering: Bool = false
+	var isDiscovering: Bool { discoveryService.isDiscovering }
 	var selectedBeaconID: String? = nil
 	var selectedBeacon: DiscoveredBeacon? { discoveredBeacons.first(where: { $0.id == selectedBeaconID }) }
 	var selectedProject: BroadcastProject? = nil
@@ -105,6 +105,7 @@ class DiscoverViewModel {
 		}
 		
 		self.fetchData()
+		self.observeActiveUUID()
 	}
 	
 	func fetchData() {
@@ -163,7 +164,6 @@ class DiscoverViewModel {
 #endif
 			
 			preferenceService.selectedUUID = uuid
-			isDiscovering = true
 			
 			if let previewBeacons {
 				self.previewBeacons = previewBeacons.map { mockBeacon in
@@ -191,11 +191,31 @@ class DiscoverViewModel {
 	}
 	
 	func stopDiscovery() {
-		isDiscovering = false
 		discoveryService.stopDiscovery()
 	}
 	
 	func checkPermissions() async {
 		await notificationPermissionManager.checkStatus()
+	}
+	
+	private func observeActiveUUID() {
+		withObservationTracking {
+			_ = discoveryService.activeUUID
+		} onChange: {
+			Task { @MainActor [weak self] in
+				guard let self else { return }
+				
+				if let activeUUID = self.discoveryService.activeUUID {
+					let uuidString = activeUUID.uuidString
+					self.proximityUUID = uuidString
+					self.selectedProject = self.projects.first(where: {
+						$0.proximityUUID.caseInsensitiveCompare(uuidString) == .orderedSame
+					})
+					self.preferenceService.selectedUUID = activeUUID
+				}
+				
+				self.observeActiveUUID()
+			}
+		}
 	}
 }
