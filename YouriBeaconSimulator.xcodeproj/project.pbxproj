@@ -43,6 +43,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8BB03A6430020F3F00A11F8E /* Exceptions for "YouriBeaconSimulatorWatch Watch App" folder in "YouriBeaconSimulator" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App/Preview/WatchPreviewData.swift,
+			);
+			target = 8BDACF562FEC2B64009BB682 /* YouriBeaconSimulator */;
+		};
 		8BDAD1932FED58E3009BB682 /* Exceptions for "YouriBeaconSimulator" folder in "YouriBeaconSimulator" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -55,6 +62,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8B62ED7B2FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8BB03A6430020F3F00A11F8E /* Exceptions for "YouriBeaconSimulatorWatch Watch App" folder in "YouriBeaconSimulator" target */,
+			);
 			path = "YouriBeaconSimulatorWatch Watch App";
 			sourceTree = "<group>";
 		};
