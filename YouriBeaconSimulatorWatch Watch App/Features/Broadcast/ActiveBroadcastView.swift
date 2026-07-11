@@ -22,7 +22,11 @@ struct ActiveBroadcastView: View {
 					.symbolEffect(.variableColor.iterative.dimInactiveLayers.nonReversing, options: .repeat(.periodic(delay: 0.3)))
 				
 				VStack {
+					Text(beacon.beaconName)
+					
 					Text("Major: \(String(beacon.majorID))")
+						.font(.caption)
+						.foregroundStyle(.secondary)
 					
 					Text("Minor: \(String(beacon.minorID))")
 						.font(.caption)
@@ -56,7 +60,7 @@ struct ActiveBroadcastView: View {
 	ActiveBroadcastView(
 		beacon: BroadcastBeaconSummary(
 			id: UUID(),
-			beaconName: "Name",
+			beaconName: "This is beacon",
 			majorID: 12,
 			minorID: 65535
 		),

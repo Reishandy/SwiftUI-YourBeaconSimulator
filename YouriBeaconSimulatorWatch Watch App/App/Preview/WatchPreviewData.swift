@@ -33,7 +33,7 @@ enum WatchPreviewData {
 			isForeground: true,
 			broadcastingBeaconID: nil,
 			broadcastableProjects: projects,
-			isDiscovering: false,
+			discoveringProjectID: nil,
 			discoveredBeacons: [],
 			commandFailedAt: nil,
 			updatedAt: .now
@@ -45,7 +45,7 @@ enum WatchPreviewData {
 			isForeground: true,
 			broadcastingBeaconID: nil,
 			broadcastableProjects: projects,
-			isDiscovering: true,
+			discoveringProjectID: projects.first?.id ?? UUID(),
 			discoveredBeacons: discoveredBeacons,
 			commandFailedAt: nil,
 			updatedAt: .now
@@ -57,7 +57,7 @@ enum WatchPreviewData {
 			isForeground: true,
 			broadcastingBeaconID: projects[0].beacons[0].id,
 			broadcastableProjects: projects,
-			isDiscovering: false,
+			discoveringProjectID: nil,
 			discoveredBeacons: [],
 			commandFailedAt: nil,
 			updatedAt: .now

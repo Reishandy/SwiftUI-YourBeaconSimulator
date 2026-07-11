@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ActiveDiscoverView: View {
+	let projectName: String
 	let discoveredBeacons: [DiscoveredBeaconSummary]
 	let onStop: () -> Void
 	
@@ -15,12 +16,12 @@ struct ActiveDiscoverView: View {
 		NavigationStack {
 			Group {
 				if discoveredBeacons.isEmpty {
-					VStack(spacing: 4) {
+					VStack(spacing: 10) {
 						Image(systemName: "dot.radiowaves.up.forward")
 							.font(.largeTitle)
 							.symbolEffect(.variableColor.iterative.dimInactiveLayers.nonReversing, options: .repeat(.periodic(delay: 0.3)))
 						
-						Text("Discovering")
+						Text(projectName)
 							.font(.headline)
 							.multilineTextAlignment(.center)
 					}
@@ -50,15 +51,14 @@ struct ActiveDiscoverView: View {
 						}
 						
 						HStack(spacing: 12) {
-							Text("Discovering")
-								.font(.headline)
-								.foregroundStyle(.secondary)
-							
 							Image(systemName: "dot.radiowaves.up.forward")
 								.font(.title2)
 								.symbolEffect(.variableColor.iterative.dimInactiveLayers.nonReversing, options: .repeat(.periodic(delay: 0.3)))
+							
+							Text(projectName)
+								.font(.headline)
+								.foregroundStyle(.secondary)
 						}
-						.frame(maxWidth: .infinity)
 					}
 					.listStyle(.carousel)
 				}
@@ -82,6 +82,7 @@ struct ActiveDiscoverView: View {
 
 #Preview("Active") {
 	ActiveDiscoverView(
+		projectName: "This is a poject",
 		discoveredBeacons: WatchPreviewData.discoveredBeacons,
 		onStop: {}
 	)
@@ -89,6 +90,7 @@ struct ActiveDiscoverView: View {
 
 #Preview("Empty") {
 	ActiveDiscoverView(
+		projectName: "This is a poject",
 		discoveredBeacons: [],
 		onStop: {}
 	)

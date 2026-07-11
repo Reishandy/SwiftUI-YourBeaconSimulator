@@ -11,7 +11,7 @@ struct ContentView: View {
 	@Environment(WatchConnectivityService.self) private var connectivity
 	
 	private var isShowingOverlay: Bool {
-		(connectivity.phoneState?.isDiscovering ?? false) ||
+		(connectivity.phoneState?.discoveringProjectID != nil) ||
 		(connectivity.phoneState?.broadcastingBeaconID != nil) ||
 		connectivity.showError ||
 		(connectivity.phoneState?.isForeground == false)
@@ -26,6 +26,7 @@ struct ContentView: View {
 			NavigationStack {
 				List {
 					NavigationLink(destination: BroadcastView(
+						isShowingOverlay: isShowingOverlay,
 						projects: projects,
 						onClick: { beaconID in
 							connectivity.send(.startBroadcast(beaconID: beaconID))
@@ -38,6 +39,7 @@ struct ContentView: View {
 					}
 					
 					NavigationLink(destination: DiscoverView(
+						isShowingOverlay: isShowingOverlay,
 						projects: projects,
 						onClick: { projectID in
 							connectivity.send(.startDiscovery(projectID: projectID))
@@ -52,11 +54,14 @@ struct ContentView: View {
 				.listStyle(.carousel)
 				.scrollIndicators(isShowingOverlay ? .hidden : .automatic)
 				.scrollDisabled(isShowingOverlay)
-				.navigationTitle("Companion") // TODO: Title?
+				.navigationTitle("Companion")
 			}
 			
-			if connectivity.phoneState?.isDiscovering ?? false {
+			if let state = connectivity.phoneState,
+			   let activeProjectID = state.discoveringProjectID,
+			   let project = state.broadcastableProjects.first(where: { $0.id == activeProjectID }) {
 				ActiveDiscoverView(
+					projectName: project.name,
 					discoveredBeacons: connectivity.phoneState?.discoveredBeacons ?? [],
 					onStop: {
 						connectivity.send(.stopDiscovery)
@@ -87,11 +92,11 @@ struct ContentView: View {
 			}
 		}
 		.animation(.default, value: connectivity.phoneState?.isForeground)
-		.animation(.default, value: connectivity.phoneState?.isDiscovering)
+		.animation(.default, value: connectivity.phoneState?.discoveringProjectID)
 		.animation(.default, value: connectivity.phoneState?.broadcastingBeaconID)
 		.animation(.easeInOut, value: connectivity.showError)
 		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.isForeground)
-		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.isDiscovering)
+		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.discoveringProjectID)
 		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.broadcastingBeaconID)
 		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.showError)
 	}

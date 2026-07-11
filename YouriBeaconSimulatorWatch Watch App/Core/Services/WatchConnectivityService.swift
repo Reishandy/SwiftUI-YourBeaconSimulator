@@ -8,7 +8,6 @@
 import WatchConnectivity
 import Observation
 
-// TODO: Optimiztion bug, state not always updates as soon as possible
 @Observable
 final class WatchConnectivityService: NSObject, WCSessionDelegate {
 	static let shared = WatchConnectivityService()

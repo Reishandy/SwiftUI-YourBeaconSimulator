@@ -47,7 +47,7 @@ final class PhoneStateAggregator {
 		withObservationTracking {
 			_ = broadcastService.activeBeacon
 			_ = discoveryService.discoveredBeacons
-			_ = discoveryService.isDiscovering
+			_ = discoveryService.activeUUID
 		} onChange: {
 			Task { @MainActor [weak self] in
 				self?.push()
@@ -100,7 +100,7 @@ final class PhoneStateAggregator {
 			isForeground: isForeground,
 			broadcastingBeaconID: broadcastService.activeBeacon?.id,
 			broadcastableProjects: cachedProjectSummaries,
-			isDiscovering: discoveryService.isDiscovering,
+			discoveringProjectID: discoveryService.activeUUID,
 			discoveredBeacons: discoveryService.discoveredBeacons.map {
 				DiscoveredBeaconSummary(major: $0.major, minor: $0.minor, proximity: $0.proximity, isCurrentlyActive: $0.isCurrentlyActive)
 			},

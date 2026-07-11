@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BroadcastView: View {
+	let isShowingOverlay: Bool
 	let projects: [BroadcastProjectSummary]
 	let onClick: (UUID) -> Void
 	
@@ -44,6 +45,8 @@ struct BroadcastView: View {
 			}
 		}
 		.listStyle(.carousel)
+		.scrollIndicators(isShowingOverlay ? .hidden : .automatic)
+		.scrollDisabled(isShowingOverlay)
 		.navigationTitle("Broadcast")
 		.navigationBarTitleDisplayMode(.inline)
 	}
@@ -52,6 +55,7 @@ struct BroadcastView: View {
 #Preview {
 	NavigationStack {
 		BroadcastView(
+			isShowingOverlay: false,
 			projects: WatchPreviewData.projects,
 			onClick: { _ in }
 		)

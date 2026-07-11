@@ -25,7 +25,7 @@ struct PhoneState: Codable {
 	var broadcastingBeaconID: UUID? = nil
 	var broadcastableProjects: [BroadcastProjectSummary] = []
 	
-	var isDiscovering: Bool = false
+	var discoveringProjectID: UUID? = nil
 	var discoveredBeacons: [DiscoveredBeaconSummary] = []
 	
 	var commandFailedAt: Date? = nil

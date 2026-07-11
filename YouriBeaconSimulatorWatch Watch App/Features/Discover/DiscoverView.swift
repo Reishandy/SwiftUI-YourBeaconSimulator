@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DiscoverView: View {
+	let isShowingOverlay: Bool
 	let projects: [BroadcastProjectSummary]
 	let onClick: (UUID) -> Void
 	
@@ -30,6 +31,8 @@ struct DiscoverView: View {
 			}
 		}
 		.listStyle(.carousel)
+		.scrollIndicators(isShowingOverlay ? .hidden : .automatic)
+		.scrollDisabled(isShowingOverlay)
 		.navigationTitle("Discover")
 		.navigationBarTitleDisplayMode(.inline)
     }
@@ -38,6 +41,7 @@ struct DiscoverView: View {
 #Preview {
 	NavigationStack {
 		DiscoverView(
+			isShowingOverlay: false,
 			projects: WatchPreviewData.projects,
 			onClick: { _ in }
 		)
