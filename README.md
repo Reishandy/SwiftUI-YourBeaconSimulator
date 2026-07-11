@@ -3,13 +3,14 @@
 
   # Your Beacon Simulator
 
-  A native, multi-platform utility designed to simulate, broadcast, and discover iBeacons across iOS, iPadOS, and macOS.
+  A native, multi-platform utility designed to simulate, broadcast, and discover iBeacons across iOS, iPadOS, macOS, and watchOS.
   
   <!-- Badges -->
   <p>
     <img src="https://img.shields.io/badge/Swift-6.0-F05138.svg?style=flat&logo=swift" alt="Swift 6.0">
     <img src="https://img.shields.io/badge/iOS-17.0+-000000.svg?style=flat&logo=apple" alt="iOS">
     <img src="https://img.shields.io/badge/macOS-14.0+-000000.svg?style=flat&logo=apple" alt="macOS">
+    <img src="https://img.shields.io/badge/watchOS-10.0+-000000.svg?style=flat&logo=apple" alt="watchOS">
     <img src="https://img.shields.io/badge/License-AGPL%203.0-blue.svg?style=flat" alt="License">
   </p>
 
@@ -22,7 +23,7 @@
 
 ## Overview
 
-Your Beacon Simulator eliminates the need for physical beacon hardware when testing location-based applications, indoor navigation, or proximity marketing triggers. Built entirely in modern Swift, it leverages device capabilities to turn your iPhone, iPad, or Mac into a fully functioning, configurable iBeacon, while also acting as a highly accurate scanner for existing beacons in your environment.
+Your Beacon Simulator eliminates the need for physical beacon hardware when testing location-based applications, indoor navigation, or proximity marketing triggers. Built entirely in modern Swift, it leverages device capabilities to turn your iPhone, iPad, or Mac into a fully functioning, configurable iBeacon, while also acting as a highly accurate scanner for existing beacons in your environment. An optimized watchOS companion extension lets you effortlessly manage and track active workflows straight from your wrist.
 
 ### iOS Previews
 
@@ -38,6 +39,14 @@ Your Beacon Simulator eliminates the need for physical beacon hardware when test
 <div align="center">
   <img src="images/macos-1.png" width="45%" alt="macOS Broadcast">
   <img src="images/macos-2.png" width="45%" alt="macOS Discovery">
+</div>
+
+### watchOS Previews
+
+<div align="center">
+  <img src="images/watch-1.png" width="22%" alt="watchOS Main Menu">
+  <img src="images/watch-2.png" width="22%" alt="watchOS Broadcast View">
+  <img src="images/watch-3.png" width="22%" alt="watchOS Discovery View">
 </div>
 
 ## Support
@@ -67,6 +76,12 @@ When reporting an issue, please include your device model, operating system vers
 * **Smart Sorting & State Tracking:** Automatically dims stale beacons that drop off the radar and sorts active ones by closest proximity.
 * **Deep-Dive Metrics:** Inspect raw RSSI (Signal Strength), estimated distance in meters, and last-seen timestamps.
 
+### Apple Watch Companion Control
+* **Remote Session Toggling:** Instantly fire commands to trigger, adjust, or completely halt active iBeacon broadcasts and discovery scanning from your wrist.
+* **Live State Mirroring:** Real-time view of active beacon streams, current project parameters, and continuous list synchronizations for discovered peripherals.
+* **Contextual Lifecycle Guarding:** Integrated safety blockers instantly alert you if the host iOS app falls into the background, preventing silent routine termination by the OS.
+* **Tailored Wearable UI:** Native carousel-styled menu navigation accented by persistent modal view overlays for active running states and tactical haptic feedback loops.
+
 ### Background Monitoring
 * **Always-On Regions:** Utilizes CoreLocation to monitor UUID regions even when the app is minimized or killed.
 * **Background Ranging:** Temporarily wakes the app upon region entry to pinpoint the exact beacon (Major/Minor) that triggered the event.
@@ -82,11 +97,12 @@ When reporting an issue, please include your device model, operating system vers
 
 This project was built to explore the boundaries of Apple's cross-platform frameworks and Bluetooth stacks. 
 
-* **Multi-Platform Native:** Built with SwiftUI, utilizing adaptive layouts (`TabView` for iOS, `NavigationSplitView` with custom window resizing for macOS).
+* **Multi-Platform Native:** Built with SwiftUI, utilizing adaptive layouts (`TabView` for iOS, `NavigationSplitView` with custom window resizing for macOS, and a `carousel` list configuration for watchOS).
 * **Framework Bridging:** 
   * **macOS:** Implements a custom `CoreBluetooth` (`CBCentralManager`) scanner with a bespoke Low-Pass Filter algorithm to stabilize erratic RSSI readings, alongside manual distance calculation via log-distance path loss approximation. Broadcasting utilizes undocumented CoreBluetooth payload construction.
-  * **iOS:** Leverages native `CoreLocation` (`CLLocationManager` and `CLBeaconRegion`) for robust, system-level monitoring.
-* **Modern Swift Concurrency:** Fully integrates Swift 6/5.9 features, specifically the new `@Observable` macro for state management across ViewModels and Services.
+  * **iOS / watchOS:** Leverages native `CoreLocation` (`CLLocationManager` and `CLBeaconRegion`) for robust, system-level monitoring.
+* **Optimized Dual-Channel Pipeline:** Incorporates low-latency `WatchConnectivity` state syncing. Employs `sendMessage` transactions for real-time immediate updates during foreground active tracking, backed by an `updateApplicationContext` fallback pipeline using monotonic timeline delta matching to eliminate rendering jitter and redundant JSON overhead.
+* **Modern Swift Concurrency:** Fully integrates Swift 6 features, specifically the new `@Observable` macro for thread-safe state management across ViewModels, Services, and Watch extensions.
 * **Data Persistence:** SwiftData handles local storage, with iCloud CloudKit synchronization seamlessly propagating configurations across devices.
 * **Centralized Permissions Engine:** Asynchronously manages the complex matrix of Bluetooth, Always-On Location, and Notification authorizations across different operating systems.
 
@@ -95,7 +111,7 @@ This project was built to explore the boundaries of Apple's cross-platform frame
 * **Framework:** SwiftUI
 * **Language:** Swift 6
 * **Data Management:** SwiftData & CloudKit
-* **Hardware APIs:** CoreLocation, CoreBluetooth
+* **Hardware & Communication APIs:** CoreLocation, CoreBluetooth, WatchConnectivity
 * **Architecture:** MVVM
 
 ## License
