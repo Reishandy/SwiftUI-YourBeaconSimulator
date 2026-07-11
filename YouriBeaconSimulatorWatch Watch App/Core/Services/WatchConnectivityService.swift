@@ -64,6 +64,10 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 		applyContext(applicationContext)
 	}
 	
+	func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+		applyContext(message)
+	}
+	
 	private func applyContext(_ context: [String: Any]) {
 		guard
 			let data = context[ConnectivityKey.payload] as? Data,
@@ -71,6 +75,10 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 		else { return }
 		
 		Task { @MainActor in
+			if let currentState = self.phoneState, decoded.updatedAt <= currentState.updatedAt {
+				return
+			}
+			
 			let isInitialLoad = self.phoneState == nil
 			let previousFailure = self.phoneState?.commandFailedAt
 			

@@ -31,7 +31,16 @@ final class PhoneConnectivityService: NSObject, WCSessionDelegate {
 	func pushState(_ state: PhoneState) {
 		guard WCSession.isSupported(), session.activationState == .activated else { return }
 		guard let data = try? encoder.encode(state) else { return }
-		try? session.updateApplicationContext([ConnectivityKey.payload: data])
+		
+		let payload = [ConnectivityKey.payload: data]
+		
+		if session.isReachable {
+			session.sendMessage(payload, replyHandler: nil) { error in
+				print("PhoneConnectivityService: Instant message failed - \(error.localizedDescription)")
+			}
+		}
+		
+		try? session.updateApplicationContext(payload)
 	}
 	
 	func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
