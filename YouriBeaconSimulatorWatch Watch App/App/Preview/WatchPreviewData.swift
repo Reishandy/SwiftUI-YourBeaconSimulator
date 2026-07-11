@@ -7,7 +7,6 @@
 
 import Foundation
 
-#if DEBUG
 enum WatchPreviewData {
 	static let projects: [BroadcastProjectSummary] = [
 		BroadcastProjectSummary(id: UUID(), name: "Lobby System", proximityUUID: UUID().uuidString, beacons: [
@@ -71,4 +70,3 @@ enum WatchPreviewData {
 		)
 	}
 }
-#endif

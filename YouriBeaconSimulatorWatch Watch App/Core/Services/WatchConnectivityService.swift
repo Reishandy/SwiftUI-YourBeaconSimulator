@@ -28,8 +28,6 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 		session.activate()
 	}
 	
-	// This is not good pattern rgiht???
-#if DEBUG
 	private init(isMock: Bool) {
 		super.init()
 	}
@@ -40,7 +38,6 @@ final class WatchConnectivityService: NSObject, WCSessionDelegate {
 		service.showError = showFailureToast
 		return service
 	}
-#endif
 	
 	func send(_ command: WatchCommand) {
 		guard session.isReachable, let data = try? encoder.encode(command) else { return }
