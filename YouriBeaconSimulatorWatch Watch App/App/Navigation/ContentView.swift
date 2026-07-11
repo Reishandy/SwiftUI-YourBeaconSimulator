@@ -11,7 +11,7 @@ struct ContentView: View {
 	@Environment(WatchConnectivityService.self) private var connectivity
 	
 	private var isShowingOverlay: Bool {
-		(connectivity.phoneState?.discoveringProjectID != nil) ||
+		(connectivity.phoneState?.discoveringProjectUUID != nil) ||
 		(connectivity.phoneState?.broadcastingBeaconID != nil) ||
 		connectivity.showError ||
 		(connectivity.phoneState?.isForeground == false)
@@ -58,8 +58,8 @@ struct ContentView: View {
 			}
 			
 			if let state = connectivity.phoneState,
-			   let activeProjectID = state.discoveringProjectID,
-			   let project = state.broadcastableProjects.first(where: { $0.id == activeProjectID }) {
+			   let discoveringProjectUUID = state.discoveringProjectUUID,
+			   let project = state.broadcastableProjects.first(where: { $0.proximityUUID == discoveringProjectUUID }) {
 				ActiveDiscoverView(
 					projectName: project.name,
 					discoveredBeacons: connectivity.phoneState?.discoveredBeacons ?? [],
@@ -92,11 +92,11 @@ struct ContentView: View {
 			}
 		}
 		.animation(.default, value: connectivity.phoneState?.isForeground)
-		.animation(.default, value: connectivity.phoneState?.discoveringProjectID)
+		.animation(.default, value: connectivity.phoneState?.discoveringProjectUUID)
 		.animation(.default, value: connectivity.phoneState?.broadcastingBeaconID)
 		.animation(.easeInOut, value: connectivity.showError)
 		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.isForeground)
-		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.discoveringProjectID)
+		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.discoveringProjectUUID)
 		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.phoneState?.broadcastingBeaconID)
 		.sensoryFeedback(.impact(weight: .heavy), trigger: connectivity.showError)
 	}

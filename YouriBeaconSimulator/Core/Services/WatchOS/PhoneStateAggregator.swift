@@ -62,17 +62,16 @@ final class PhoneStateAggregator {
 			object: modelContext,
 			queue: .main
 		) { [weak self] notification in
-			Task { @MainActor in
-				guard let self else { return }
-				
-				let relevantKeys: [ModelContext.NotificationKey] = [.insertedIdentifiers, .updatedIdentifiers, .deletedIdentifiers]
-				let touchedRelevantModel = relevantKeys.contains { key in
-					guard let identifiers = notification.userInfo?[key.rawValue] as? [PersistentIdentifier] else { return false }
-					return identifiers.contains { $0.entityName == "BroadcastProject" || $0.entityName == "BroadcastBeacon" }
-				}
-				
-				if touchedRelevantModel {
-					self.refreshProjects()
+			let relevantKeys: [ModelContext.NotificationKey] = [.insertedIdentifiers, .updatedIdentifiers, .deletedIdentifiers]
+			
+			let touchedRelevantModel = relevantKeys.contains { key in
+				guard let identifiers = notification.userInfo?[key.rawValue] as? [PersistentIdentifier] else { return false }
+				return identifiers.contains { $0.entityName == "BroadcastProject" || $0.entityName == "BroadcastBeacon" }
+			}
+			
+			if touchedRelevantModel {
+				Task { @MainActor [weak self] in
+					self?.refreshProjects()
 				}
 			}
 		}
@@ -87,6 +86,7 @@ final class PhoneStateAggregator {
 			BroadcastProjectSummary(
 				id: project.id,
 				name: project.name,
+				proximityUUID: project.proximityUUID,
 				beacons: project.sortedBeacons.map {
 					BroadcastBeaconSummary(id: $0.id, beaconName: $0.beaconName, majorID: $0.majorID, minorID: $0.minorID)
 				}
@@ -100,7 +100,7 @@ final class PhoneStateAggregator {
 			isForeground: isForeground,
 			broadcastingBeaconID: broadcastService.activeBeacon?.id,
 			broadcastableProjects: cachedProjectSummaries,
-			discoveringProjectID: discoveryService.activeUUID,
+			discoveringProjectUUID: discoveryService.activeUUID?.uuidString,
 			discoveredBeacons: discoveryService.discoveredBeacons.map {
 				DiscoveredBeaconSummary(major: $0.major, minor: $0.minor, proximity: $0.proximity, isCurrentlyActive: $0.isCurrentlyActive)
 			},

@@ -10,5 +10,6 @@ import Foundation
 struct BroadcastProjectSummary: Codable, Identifiable, Hashable {
 	let id: UUID
 	let name: String
+	let proximityUUID: String
 	let beacons: [BroadcastBeaconSummary]
 }
