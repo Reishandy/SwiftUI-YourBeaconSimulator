@@ -9,8 +9,6 @@ import SwiftUI
 import SwiftData
 import CoreBluetooth
 
-import CloudKit
-
 @main
 struct YouriBeaconSimulatorApp: App {
 	@Environment(\.scenePhase) private var scenePhase
@@ -47,8 +45,6 @@ struct YouriBeaconSimulatorApp: App {
 	}
 	
 	init() {
-		print(CKRecord.self)
-		
 		do {
 			let schema = Schema([
 				BroadcastProject.self,

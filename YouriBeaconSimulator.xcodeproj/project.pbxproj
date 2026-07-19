@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8B62ED842FFFB2DD00F148CE /* YouriBeaconSimulatorWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8B62ED7A2FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B81CF9D300D04870055D6F2 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B81CF9C300D04870055D6F2 /* CloudKit.framework */; };
 		8BC964B72FFFC52C00AB4D3F /* SharedConnectivityProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC964B62FFFC52900AB4D3F /* SharedConnectivityProtocol.swift */; };
 		8BC964C12FFFC7D600AB4D3F /* SharedConnectivityProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC964B62FFFC52900AB4D3F /* SharedConnectivityProtocol.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		8B62ED7A2FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "YouriBeaconSimulatorWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B81CF9C300D04870055D6F2 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
 		8BC964B62FFFC52900AB4D3F /* SharedConnectivityProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedConnectivityProtocol.swift; sourceTree = "<group>"; };
 		8BDACF572FEC2B64009BB682 /* YouriBeaconSimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouriBeaconSimulator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -95,12 +97,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B81CF9D300D04870055D6F2 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B81CF9B300D04870055D6F2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8B81CF9C300D04870055D6F2 /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		8BC964C22FFFC81700AB4D3F /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -116,6 +127,7 @@
 				8BC964C22FFFC81700AB4D3F /* Shared */,
 				8BDACF592FEC2B64009BB682 /* YouriBeaconSimulator */,
 				8B62ED7B2FFFB2DC00F148CE /* YouriBeaconSimulatorWatch Watch App */,
+				8B81CF9B300D04870055D6F2 /* Frameworks */,
 				8BDACF582FEC2B64009BB682 /* Products */,
 			);
 			sourceTree = "<group>";
